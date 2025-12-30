@@ -3,189 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 16 - 2026 Meal Calendar</title>
+    <title>Week 16 Recipes - 2026 Meal Calendar</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
-            padding: 15px;
-            line-height: 1.5;
+            padding: 10px;
+            line-height: 1.4;
+            font-size: 14px;
         }
-        .container { max-width: 700px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; }
         .header {
             background: linear-gradient(135deg, #2c5530, #4a7c50);
             color: white;
-            padding: 25px;
-            border-radius: 12px 12px 0 0;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            margin-bottom: 15px;
         }
-        .header h1 { font-size: 1.8em; margin-bottom: 8px; }
-        .header .dates { opacity: 0.9; font-size: 1.1em; }
-        .content {
+        .header h1 { font-size: 1.5em; margin-bottom: 5px; }
+        .section {
             background: white;
-            padding: 25px;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .section { margin-bottom: 30px; }
         .section h2 {
             color: #2c5530;
-            border-bottom: 3px solid #e8f5e9;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
             margin-bottom: 15px;
-            font-size: 1.3em;
         }
-        table { width: 100%; border-collapse: collapse; }
-        tr { border-bottom: 1px solid #eee; }
-        tr:last-child { border-bottom: none; }
-        tr.roast-row { background: #fce4ec; }
-        td { padding: 12px 8px; vertical-align: top; }
-        td.day {
-            width: 50px;
+        .day-meal {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .day-meal:last-child { border-bottom: none; }
+        .day-label {
+            display: inline-block;
+            background: #2c5530;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: bold;
-            color: #666;
-            font-size: 0.9em;
+            margin-bottom: 8px;
         }
-        a { color: #2c5530; text-decoration: none; font-weight: 500; }
-        a:hover { text-decoration: underline; color: #1a3a1f; }
-        .link-icon { color: #888; font-size: 0.8em; }
-        .simple-note {
-            display: block;
-            font-size: 0.85em;
+        .recipe-card {
+            background: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .recipe-header {
+            background: #e8f5e9;
+            padding: 10px 12px;
+        }
+        .recipe-header h3 {
+            color: #2c5530;
+            font-size: 1.1em;
+            margin-bottom: 3px;
+        }
+        .recipe-meta {
             color: #666;
+            font-size: 12px;
+        }
+        .recipe-body {
+            padding: 12px;
+        }
+        .ingredients ul {
+            margin: 5px 0 10px 20px;
+            font-size: 13px;
+        }
+        .ingredients li { margin-bottom: 2px; }
+        .method p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .roast-section {
+            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+        }
+        .roast-section h2 {
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+        .sides-header {
+            color: #c62828;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+        }
+        .see-roast {
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            color: #c62828;
             font-style: italic;
-            margin-top: 3px;
-            padding: 5px 8px;
-            background: #f9f9f9;
-            border-radius: 4px;
         }
-        .breakfast {
-            background: linear-gradient(135deg, #fff9e6, #fff3cd);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #ffc107;
-        }
-        .roast {
-            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #e91e63;
-        }
-        .roast h2 { color: #c2185b; }
-        .roast-title { font-size: 1.2em; margin-bottom: 8px; }
-        .roast-title a { color: #c2185b; }
-        .roast-sides { color: #666; margin-bottom: 10px; }
-        .sides-links { font-size: 0.9em; }
-        .sides-links a { color: #888; margin: 0 5px; }
         .back {
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #2c5530;
             text-decoration: none;
             padding: 8px 15px;
-            background: #e8f5e9;
+            background: white;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 14px;
         }
-        .back:hover { background: #c8e6c9; }
-        .tip {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #1565c0;
+        .breakfast-section {
+            background: linear-gradient(135deg, #fffde7, #fff9c4);
+        }
+        .breakfast-section h2 {
+            color: #f57f17;
+            border-color: #ffee58;
+        }
+        @media (max-width: 600px) {
+            body { padding: 5px; font-size: 13px; }
+            .section { padding: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="index.html" class="back">&#8592; All weeks</a>
+        <a href="index.html" class="back">&#8592; All Weeks</a>
 
         <div class="header">
             <h1>Week 16</h1>
-            <div class="dates">13 Apr - 19 Apr 2026</div>
+            <div>13 Apr - 19 Apr 2026</div>
         </div>
 
-        <div class="content">
-            <div class="section breakfast">
-                <h2>Weekend Breakfast</h2>
-                <p><a href="https://www.bbcgoodfood.com/recipes/avocado-toast" target="_blank">Avocado on toast with eggs</a> <span class="link-icon">&#8599;</span></p>
-            </div>
-
-            <div class="section">
-                <h2>Lunches (20 min or less)</h2>
-                <table><tr>
-                <td class="day">Mon</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/tomato-soup" target="_blank">Tomato soup</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Tue</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/egg-fried-rice" target="_blank">Egg fried rice</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Wed</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/avocado-toast" target="_blank">Avocado toast</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Thu</td>
-                <td>Cheese & ham toastie<span class="simple-note">Toasted sandwich with ham & cheese</span></td>
-            </tr>
-<tr>
-                <td class="day">Fri</td>
-                <td>Smoked salmon bagel<span class="simple-note">Bagel, cream cheese, smoked salmon, capers</span></td>
-            </tr>
-<tr>
-                <td class="day">Sat</td>
-                <td>Leftover roast sandwich<span class="simple-note">Cold meat from roast with stuffing & gravy</span></td>
-            </tr>
-<tr>
-                <td class="day">Sun</td>
-                <td>Cheese on toast<span class="simple-note">Grated cheese on toast under the grill</span></td>
-            </tr>
-</table>
-            </div>
-
-            <div class="section">
-                <h2>Teas / Dinners (30 min or less)</h2>
-                <table><tr>
-                <td class="day">Mon</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/slow-cooker-chilli-con-carne" target="_blank">Chilli con carne</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Tue</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/chicken-leek-pie" target="_blank">Chicken leek pie</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Wed</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/cauliflower-cheese" target="_blank">Cauliflower cheese with ham</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Thu</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/beef-stroganoff" target="_blank">Beef stroganoff</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Fri</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/fish-tacos" target="_blank">Fish tacos</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Sat</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/lamb-koftas" target="_blank">Lamb koftas with pitta</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Sun</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/chicken-tikka-masala" target="_blank">Chicken tikka masala</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-</table>
-            </div>
-
+        <div class="section breakfast-section">
+            <h2>Weekend Breakfast</h2>
             
-
-            <div class="tip">
-                <strong>Tip:</strong> Click any meal with &#8599; to see the full recipe on BBC Good Food. Grey text shows quick instructions for simple meals.
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Eggs Florentine</h3>
+            <span class="recipe-meta">20 mins | Serves 2</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>4 eggs</li><li>200g spinach</li><li>2 English muffins</li><li>Hollandaise sauce (see Eggs Benedict)</li><li>Knob of butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Wilt spinach in butter, season. Toast muffins. Poach eggs. Layer muffin, spinach, egg, hollandaise.</p>
             </div>
         </div>
+    </div>
+        </div>
+
+        <div class="section">
+            <h2>Lunches</h2>
+            <div class="day-meal"><span class="day-label">Mon</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Tomato soup</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>2 tins chopped tomatoes</li><li>1 onion, chopped</li><li>2 garlic cloves</li><li>500ml veg stock</li><li>1 tsp sugar</li><li>2 tbsp olive oil</li><li>Fresh basil</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Soften onion and garlic in oil. Add tomatoes, stock, sugar. Simmer 15 mins. Blend smooth, season, serve with basil and crusty bread.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Egg fried rice</h3>
+            <span class="recipe-meta">15 mins | Serves 2</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>300g cooked rice (cold)</li><li>2 eggs, beaten</li><li>100g peas</li><li>2 spring onions, sliced</li><li>2 tbsp soy sauce</li><li>2 tbsp oil</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Heat oil in wok, scramble eggs, set aside. Stir-fry rice 2 mins, add peas, cook 2 mins. Add eggs, spring onions, soy sauce. Toss together.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Wed</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Avocado on toast</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>1 ripe avocado</li><li>2 slices sourdough, toasted</li><li>Lemon juice</li><li>Chilli flakes</li><li>Salt & pepper</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Mash avocado with lemon juice, salt, pepper. Spread on toast, sprinkle with chilli flakes. Top with poached egg if desired.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Thu</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Cheese on toast</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>2 slices bread</li><li>75g cheddar, grated</li><li>Worcestershire sauce (optional)</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Toast bread one side under grill. Flip, cover with cheese, dash of Worcestershire. Grill until bubbling and golden.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Fri</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Smoked salmon bagel</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>1 bagel, halved and toasted</li><li>2 tbsp cream cheese</li><li>2 slices smoked salmon</li><li>Capers</li><li>Lemon wedge</li><li>Black pepper</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Spread cream cheese on bagel halves. Top with smoked salmon, capers, squeeze of lemon and pepper.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sat</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Leftover roast sandwich</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>Sliced roast meat</li><li>2 slices bread</li><li>Stuffing</li><li>Gravy or cranberry sauce</li><li>Butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Butter bread, layer with cold sliced meat, stuffing, and sauce. Press together.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sun</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Beans on toast</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>1 tin baked beans</li><li>2 slices bread</li><li>Butter</li><li>Grated cheese (optional)</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Heat beans in pan or microwave. Toast and butter bread. Pour beans over toast, top with cheese if using.</p>
+            </div>
+        </div>
+    </div></div>
+        </div>
+
+        <div class="section">
+            <h2>Dinners</h2>
+            <div class="day-meal"><span class="day-label">Mon</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Chilli Con Carne</h3>
+            <span class="recipe-meta">45 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g beef mince</li><li>1 onion, diced</li><li>2 garlic cloves</li><li>1 tin chopped tomatoes</li><li>1 tin kidney beans</li><li>2 tsp cumin</li><li>1 tsp chilli powder</li><li>Rice, sour cream to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Brown mince, add onion, garlic. Add spices, cook 1 min. Add tomatoes, beans. Simmer 30 mins. Serve with rice, sour cream, grated cheese.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Chicken Leek Pie</h3>
+            <span class="recipe-meta">1 hour | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g chicken breast, cubed</li><li>3 leeks, sliced</li><li>200ml chicken stock</li><li>200ml double cream</li><li>1 tbsp Dijon mustard</li><li>1 sheet puff pastry</li><li>1 egg, beaten</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Poach chicken in stock 15 mins, remove. Cook leeks in stock until soft. Add cream, mustard, return chicken. Pour into pie dish. Top with pastry, brush with egg. Bake 200C 25 mins until golden.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Wed</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Mushroom Risotto</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>300g risotto rice</li><li>300g mixed mushrooms, sliced</li><li>1 onion, diced</li><li>2 garlic cloves</li><li>150ml white wine</li><li>1L hot veg stock</li><li>50g parmesan</li><li>2 tbsp butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Fry mushrooms in butter, set aside. Cook onion and garlic, add rice, stir 1 min. Add wine, stir until absorbed. Add stock ladle by ladle, stirring, until rice is creamy (20 mins). Stir in mushrooms, parmesan, butter.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Thu</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Beef Stroganoff</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g beef sirloin, sliced thin</li><li>250g mushrooms, sliced</li><li>1 onion, sliced</li><li>2 garlic cloves</li><li>200ml beef stock</li><li>150ml sour cream</li><li>1 tbsp paprika</li><li>Rice or pasta to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Fry beef quickly over high heat, set aside. Cook onion, garlic, mushrooms 5 mins. Add paprika, stock, simmer 5 mins. Return beef, stir in sour cream. Serve with rice or pasta.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Fri</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Fish Tacos</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>400g white fish fillets</li><li>2 tsp cumin</li><li>1 tsp paprika</li><li>8 small tortillas</li><li>1/4 cabbage, shredded</li><li>Lime</li><li>Sour cream</li><li>Fresh coriander</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Season fish with cumin, paprika, salt. Pan fry or grill 3-4 mins each side. Flake fish. Warm tortillas. Fill with cabbage, fish, sour cream, coriander, lime juice.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sat</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Lamb Koftas</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g lamb mince</li><li>1 onion, grated</li><li>2 garlic cloves, crushed</li><li>1 tsp cumin</li><li>1 tsp coriander</li><li>Fresh mint</li><li>Pitta bread</li><li>Tzatziki, salad to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Mix lamb, onion, garlic, spices, mint. Shape into sausages around skewers. Grill or BBQ 10-12 mins turning. Serve in pitta with tzatziki and salad.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sun</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Chicken Tikka Masala</h3>
+            <span class="recipe-meta">40 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g chicken breast, cubed</li><li>2 tbsp tikka paste</li><li>1 onion, sliced</li><li>2 garlic cloves</li><li>1 tin chopped tomatoes</li><li>200ml double cream</li><li>Fresh coriander</li><li>Rice to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Coat chicken in half the tikka paste. Fry chicken until golden, set aside. Cook onion and garlic, add remaining paste, tomatoes. Simmer 10 mins, add cream and chicken. Cook 10 mins. Serve with rice and coriander.</p>
+            </div>
+        </div>
+    </div></div>
+        </div>
+
+        
     </div>
 </body>
 </html>

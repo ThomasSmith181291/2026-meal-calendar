@@ -3,189 +3,392 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Week 2 - 2026 Meal Calendar</title>
+    <title>Week 2 Recipes - 2026 Meal Calendar</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
-            padding: 15px;
-            line-height: 1.5;
+            padding: 10px;
+            line-height: 1.4;
+            font-size: 14px;
         }
-        .container { max-width: 700px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; }
         .header {
             background: linear-gradient(135deg, #2c5530, #4a7c50);
             color: white;
-            padding: 25px;
-            border-radius: 12px 12px 0 0;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
+            margin-bottom: 15px;
         }
-        .header h1 { font-size: 1.8em; margin-bottom: 8px; }
-        .header .dates { opacity: 0.9; font-size: 1.1em; }
-        .content {
+        .header h1 { font-size: 1.5em; margin-bottom: 5px; }
+        .section {
             background: white;
-            padding: 25px;
-            border-radius: 0 0 12px 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .section { margin-bottom: 30px; }
         .section h2 {
             color: #2c5530;
-            border-bottom: 3px solid #e8f5e9;
-            padding-bottom: 10px;
+            border-bottom: 2px solid #e8f5e9;
+            padding-bottom: 8px;
             margin-bottom: 15px;
-            font-size: 1.3em;
         }
-        table { width: 100%; border-collapse: collapse; }
-        tr { border-bottom: 1px solid #eee; }
-        tr:last-child { border-bottom: none; }
-        tr.roast-row { background: #fce4ec; }
-        td { padding: 12px 8px; vertical-align: top; }
-        td.day {
-            width: 50px;
+        .day-meal {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .day-meal:last-child { border-bottom: none; }
+        .day-label {
+            display: inline-block;
+            background: #2c5530;
+            color: white;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: bold;
-            color: #666;
-            font-size: 0.9em;
+            margin-bottom: 8px;
         }
-        a { color: #2c5530; text-decoration: none; font-weight: 500; }
-        a:hover { text-decoration: underline; color: #1a3a1f; }
-        .link-icon { color: #888; font-size: 0.8em; }
-        .simple-note {
-            display: block;
-            font-size: 0.85em;
+        .recipe-card {
+            background: #fafafa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .recipe-header {
+            background: #e8f5e9;
+            padding: 10px 12px;
+        }
+        .recipe-header h3 {
+            color: #2c5530;
+            font-size: 1.1em;
+            margin-bottom: 3px;
+        }
+        .recipe-meta {
             color: #666;
+            font-size: 12px;
+        }
+        .recipe-body {
+            padding: 12px;
+        }
+        .ingredients ul {
+            margin: 5px 0 10px 20px;
+            font-size: 13px;
+        }
+        .ingredients li { margin-bottom: 2px; }
+        .method p {
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .roast-section {
+            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+        }
+        .roast-section h2 {
+            color: #c62828;
+            border-color: #ffcdd2;
+        }
+        .sides-header {
+            color: #c62828;
+            margin: 20px 0 10px 0;
+            font-size: 1.1em;
+        }
+        .see-roast {
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 5px;
+            color: #c62828;
             font-style: italic;
-            margin-top: 3px;
-            padding: 5px 8px;
-            background: #f9f9f9;
-            border-radius: 4px;
         }
-        .breakfast {
-            background: linear-gradient(135deg, #fff9e6, #fff3cd);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #ffc107;
-        }
-        .roast {
-            background: linear-gradient(135deg, #fce4ec, #f8bbd9);
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #e91e63;
-        }
-        .roast h2 { color: #c2185b; }
-        .roast-title { font-size: 1.2em; margin-bottom: 8px; }
-        .roast-title a { color: #c2185b; }
-        .roast-sides { color: #666; margin-bottom: 10px; }
-        .sides-links { font-size: 0.9em; }
-        .sides-links a { color: #888; margin: 0 5px; }
         .back {
             display: inline-block;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #2c5530;
             text-decoration: none;
             padding: 8px 15px;
-            background: #e8f5e9;
+            background: white;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 14px;
         }
-        .back:hover { background: #c8e6c9; }
-        .tip {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 0.9em;
-            color: #1565c0;
+        .breakfast-section {
+            background: linear-gradient(135deg, #fffde7, #fff9c4);
+        }
+        .breakfast-section h2 {
+            color: #f57f17;
+            border-color: #ffee58;
+        }
+        @media (max-width: 600px) {
+            body { padding: 5px; font-size: 13px; }
+            .section { padding: 10px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="index.html" class="back">&#8592; All weeks</a>
+        <a href="index.html" class="back">&#8592; All Weeks</a>
 
         <div class="header">
             <h1>Week 2</h1>
-            <div class="dates">05 Jan - 11 Jan 2026</div>
+            <div>05 Jan - 11 Jan 2026</div>
         </div>
 
-        <div class="content">
-            <div class="section breakfast">
-                <h2>Weekend Breakfast</h2>
-                <p><a href="https://www.bbcgoodfood.com/recipes/eggs-benedict" target="_blank">Eggs Benedict</a> <span class="link-icon">&#8599;</span></p>
-            </div>
-
-            <div class="section">
-                <h2>Lunches (20 min or less)</h2>
-                <table><tr>
-                <td class="day">Mon</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/carrot-coriander-soup" target="_blank">Carrot & coriander soup</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Tue</td>
-                <td>Cheese toastie with soup<span class="simple-note">Grilled cheese sandwich with tinned soup</span></td>
-            </tr>
-<tr>
-                <td class="day">Wed</td>
-                <td>Prawn mayo wrap<span class="simple-note">Prawns, mayo, lemon in a wrap with salad</span></td>
-            </tr>
-<tr>
-                <td class="day">Thu</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/cheese-omelette" target="_blank">Cheese omelette</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Fri</td>
-                <td>Tuna melt<span class="simple-note">Toast with tuna mayo, cheese grilled on top</span></td>
-            </tr>
-<tr>
-                <td class="day">Sat</td>
-                <td>Hummus & veg wrap<span class="simple-note">Hummus in wrap with cucumber, carrot, peppers</span></td>
-            </tr>
-<tr>
-                <td class="day">Sun</td>
-                <td>Cheese & pickle sandwich<span class="simple-note">Cheddar & Branston pickle in bread</span></td>
-            </tr>
-</table>
-            </div>
-
-            <div class="section">
-                <h2>Teas / Dinners (30 min or less)</h2>
-                <table><tr>
-                <td class="day">Mon</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/cottage-pie" target="_blank">Cottage pie</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Tue</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/fish-tacos" target="_blank">Fish tacos</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Wed</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/mushroom-risotto" target="_blank">Mushroom risotto</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Thu</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/chicken-korma" target="_blank">Chicken korma</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Fri</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/lasagne" target="_blank">Lasagne</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Sat</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/lamb-koftas" target="_blank">Lamb koftas</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-<tr>
-                <td class="day">Sun</td>
-                <td><a href="https://www.bbcgoodfood.com/recipes/thai-green-curry" target="_blank">Thai green curry</a> <span class="link-icon">&#8599;</span></td>
-            </tr>
-</table>
-            </div>
-
+        <div class="section breakfast-section">
+            <h2>Weekend Breakfast</h2>
             
-
-            <div class="tip">
-                <strong>Tip:</strong> Click any meal with &#8599; to see the full recipe on BBC Good Food. Grey text shows quick instructions for simple meals.
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Eggs Benedict</h3>
+            <span class="recipe-meta">20 mins | Serves 2</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>4 eggs</li><li>2 English muffins</li><li>4 slices ham</li><li>For hollandaise: 2 egg yolks, 100g butter, 1 tbsp lemon juice</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Make hollandaise: whisk yolks and lemon over simmering water, slowly add melted butter whisking. Poach eggs 3 mins. Toast muffins, top with ham, egg, hollandaise.</p>
             </div>
         </div>
+    </div>
+        </div>
+
+        <div class="section">
+            <h2>Lunches</h2>
+            <div class="day-meal"><span class="day-label">Mon</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Carrot & coriander soup</h3>
+            <span class="recipe-meta">30 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g carrots, chopped</li><li>1 onion, chopped</li><li>1L veg stock</li><li>1 tsp ground coriander</li><li>Fresh coriander</li><li>2 tbsp olive oil</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Soften onion in oil 5 mins. Add carrots, ground coriander, stock. Simmer 20 mins until carrots soft. Blend smooth, serve with fresh coriander.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Cheese toastie</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>2 slices bread</li><li>75g cheddar, grated</li><li>Butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Butter bread on outside. Fill with cheese. Fry in pan until golden both sides and cheese melted.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Wed</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Prawn mayo wrap</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>100g cooked prawns</li><li>2 tbsp mayo</li><li>Squeeze lemon juice</li><li>1 wrap</li><li>Lettuce, cucumber</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Mix prawns with mayo and lemon. Lay wrap flat, add lettuce, cucumber, prawn mixture. Roll up tightly.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Thu</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Cheese omelette</h3>
+            <span class="recipe-meta">10 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>3 eggs</li><li>50g cheese, grated</li><li>1 tbsp butter</li><li>Salt & pepper</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Beat eggs, season. Melt butter in pan over medium heat. Pour in eggs, swirl to cover base. When nearly set, add cheese to one half, fold over. Serve immediately.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Fri</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Tuna melt</h3>
+            <span class="recipe-meta">10 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>1 tin tuna, drained</li><li>2 tbsp mayo</li><li>2 slices bread</li><li>50g cheddar, sliced</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Mix tuna with mayo. Toast bread lightly, spread tuna mixture on top, add cheese. Grill until cheese melted and bubbling.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sat</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Hummus & veg wrap</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>3 tbsp hummus</li><li>1 wrap</li><li>Grated carrot</li><li>Cucumber, sliced</li><li>Red pepper, sliced</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Spread hummus across wrap. Add vegetables in a line. Roll up tightly, cut in half diagonally.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sun</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Cheese & pickle sandwich</h3>
+            <span class="recipe-meta">5 mins | Serves 1</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>2 slices bread</li><li>75g mature cheddar, sliced</li><li>2 tbsp Branston pickle</li><li>Butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Butter bread, layer cheese and pickle. Press together, cut in half.</p>
+            </div>
+        </div>
+    </div></div>
+        </div>
+
+        <div class="section">
+            <h2>Dinners</h2>
+            <div class="day-meal"><span class="day-label">Mon</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Cottage Pie</h3>
+            <span class="recipe-meta">1 hour | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g beef mince</li><li>1 onion, diced</li><li>2 carrots, diced</li><li>400ml beef stock</li><li>2 tbsp tomato puree</li><li>1 tsp Worcestershire sauce</li><li>800g potatoes</li><li>50g butter</li><li>50ml milk</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Brown mince, add onion, carrots. Add stock, puree, Worcestershire, simmer 20 mins. Boil potatoes, mash with butter and milk. Put mince in dish, top with mash. Bake 200C 25 mins until golden.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Fish Tacos</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>400g white fish fillets</li><li>2 tsp cumin</li><li>1 tsp paprika</li><li>8 small tortillas</li><li>1/4 cabbage, shredded</li><li>Lime</li><li>Sour cream</li><li>Fresh coriander</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Season fish with cumin, paprika, salt. Pan fry or grill 3-4 mins each side. Flake fish. Warm tortillas. Fill with cabbage, fish, sour cream, coriander, lime juice.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Wed</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Mushroom Risotto</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>300g risotto rice</li><li>300g mixed mushrooms, sliced</li><li>1 onion, diced</li><li>2 garlic cloves</li><li>150ml white wine</li><li>1L hot veg stock</li><li>50g parmesan</li><li>2 tbsp butter</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Fry mushrooms in butter, set aside. Cook onion and garlic, add rice, stir 1 min. Add wine, stir until absorbed. Add stock ladle by ladle, stirring, until rice is creamy (20 mins). Stir in mushrooms, parmesan, butter.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Thu</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Chicken Korma</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g chicken breast, cubed</li><li>1 onion, sliced</li><li>3 tbsp korma paste</li><li>200ml coconut cream</li><li>100g ground almonds</li><li>50g sultanas</li><li>Fresh coriander</li><li>Rice to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Fry chicken until golden, set aside. Cook onion 5 mins, add korma paste, cook 1 min. Add coconut cream, almonds, sultanas. Return chicken, simmer 15 mins. Serve with rice and coriander.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Fri</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Lasagne</h3>
+            <span class="recipe-meta">1 hour 15 mins | Serves 6</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g beef mince</li><li>1 onion, diced</li><li>2 tins chopped tomatoes</li><li>Lasagne sheets</li><li>50g butter</li><li>50g flour</li><li>500ml milk</li><li>100g parmesan</li><li>100g mozzarella</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Make meat sauce: brown mince, add onion, tomatoes, simmer 20 mins. Make white sauce: melt butter, add flour, gradually add milk, stir until thick. Layer: meat, pasta, white sauce. Repeat. Top with cheese. Bake 180C 40 mins.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sat</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Lamb Koftas</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>500g lamb mince</li><li>1 onion, grated</li><li>2 garlic cloves, crushed</li><li>1 tsp cumin</li><li>1 tsp coriander</li><li>Fresh mint</li><li>Pitta bread</li><li>Tzatziki, salad to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Mix lamb, onion, garlic, spices, mint. Shape into sausages around skewers. Grill or BBQ 10-12 mins turning. Serve in pitta with tzatziki and salad.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Sun</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Sausage Casserole</h3>
+            <span class="recipe-meta">45 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>8 pork sausages</li><li>1 onion, sliced</li><li>2 peppers, sliced</li><li>2 tins chopped tomatoes</li><li>1 tin cannellini beans</li><li>2 tsp smoked paprika</li><li>Crusty bread to serve</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Brown sausages in pan, set aside. Cook onion and peppers 5 mins. Add tomatoes, paprika, beans, return sausages. Cover, simmer 30 mins. Serve with crusty bread.</p>
+            </div>
+        </div>
+    </div></div>
+        </div>
+
+        
     </div>
 </body>
 </html>
