@@ -6,290 +6,243 @@
     <title>Week 8 Recipes - 2026 Meal Calendar</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f5f5;
-            padding: 10px;
-            line-height: 1.4;
-            font-size: 14px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 10px; line-height: 1.4; font-size: 14px; }
         .container { max-width: 800px; margin: 0 auto; }
-        .header {
-            background: linear-gradient(135deg, #2c5530, #4a7c50);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 15px;
-        }
+        .header { background: linear-gradient(135deg, #2c5530, #4a7c50); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 15px; }
         .header h1 { font-size: 1.5em; margin-bottom: 5px; }
-        .section {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .section h2 {
-            color: #2c5530;
-            border-bottom: 2px solid #e8f5e9;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
-        }
-        .day-meal {
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-        }
+        .section { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section h2 { color: #2c5530; border-bottom: 2px solid #e8f5e9; padding-bottom: 8px; margin-bottom: 15px; }
+        .day-meal { margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
         .day-meal:last-child { border-bottom: none; }
-        .day-label {
-            display: inline-block;
-            background: #2c5530;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .recipe-card {
-            background: #fafafa;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .recipe-header {
-            background: #e8f5e9;
-            padding: 10px 12px;
-        }
-        .recipe-header h3 {
-            color: #2c5530;
-            font-size: 1.1em;
-            margin-bottom: 3px;
-        }
-        .recipe-meta {
-            color: #666;
-            font-size: 12px;
-        }
-        .recipe-body {
-            padding: 12px;
-        }
-        .ingredients ul {
-            margin: 5px 0 10px 20px;
-            font-size: 13px;
-        }
+        .day-label { display: inline-block; background: #2c5530; color: white; padding: 3px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; margin-bottom: 8px; }
+        .recipe-card { background: #fafafa; border-radius: 8px; overflow: hidden; }
+        .recipe-header { background: #e8f5e9; padding: 10px 12px; }
+        .recipe-header h3 { color: #2c5530; font-size: 1.1em; margin-bottom: 3px; }
+        .recipe-meta { color: #666; font-size: 12px; }
+        .recipe-body { padding: 12px; }
+        .ingredients ul { margin: 5px 0 10px 20px; font-size: 13px; }
         .ingredients li { margin-bottom: 2px; }
-        .method p {
-            font-size: 13px;
-            line-height: 1.5;
-        }
-        .roast-section {
-            background: linear-gradient(135deg, #fff5f5, #ffe8e8);
-        }
-        .roast-section h2 {
-            color: #c62828;
-            border-color: #ffcdd2;
-        }
-        .sides-header {
-            color: #c62828;
-            margin: 20px 0 10px 0;
-            font-size: 1.1em;
-        }
-        .see-roast {
-            background: #ffebee;
-            padding: 10px;
-            border-radius: 5px;
-            color: #c62828;
-            font-style: italic;
-        }
-        .back {
-            display: inline-block;
-            margin-bottom: 15px;
-            color: #2c5530;
-            text-decoration: none;
-            padding: 8px 15px;
-            background: white;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-        .breakfast-section {
-            background: linear-gradient(135deg, #fffde7, #fff9c4);
-        }
-        .breakfast-section h2 {
-            color: #f57f17;
-            border-color: #ffee58;
-        }
-        @media (max-width: 600px) {
-            body { padding: 5px; font-size: 13px; }
-            .section { padding: 10px; }
-        }
+        .method p { font-size: 13px; line-height: 1.5; }
+        .roast-section { background: linear-gradient(135deg, #fff5f5, #ffe8e8); }
+        .roast-section h2 { color: #c62828; border-color: #ffcdd2; }
+        .sides-header { color: #c62828; margin: 20px 0 10px 0; font-size: 1.1em; }
+        .see-roast { background: #ffebee; padding: 10px; border-radius: 5px; color: #c62828; font-style: italic; }
+        .back { display: inline-block; margin-bottom: 15px; color: #2c5530; text-decoration: none; padding: 8px 15px; background: white; border-radius: 20px; font-size: 14px; }
+        .breakfast-section { background: linear-gradient(135deg, #fffde7, #fff9c4); }
+        .breakfast-section h2 { color: #f57f17; border-color: #ffee58; }
+        @media (max-width: 600px) { body { padding: 5px; font-size: 13px; } .section { padding: 10px; } }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="index.html" class="back">&#8592; All Weeks</a>
-
         <div class="header">
             <h1>Week 8</h1>
             <div>16 Feb - 22 Feb 2026</div>
         </div>
-
         <div class="section breakfast-section">
             <h2>Weekend Breakfast</h2>
             
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>American Pancakes</h3>
-            <span class="recipe-meta">20 mins | Serves 4</span>
+            <h3>Shakshuka</h3>
+            <span class="recipe-meta">25 mins | Serves 2</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>200g self-raising flour</li><li>1 tsp baking powder</li><li>1 egg</li><li>250ml milk</li><li>2 tbsp melted butter</li><li>Pinch salt</li><li>Maple syrup, blueberries, bacon</li></ul>
+                <ul><li>1 tin tomatoes</li><li>1 red pepper, diced</li><li>1 onion</li><li>2 garlic cloves</li><li>1 tsp cumin</li><li>1 tsp paprika</li><li>4 eggs</li><li>Coriander</li><li>Crusty bread</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Mix dry ingredients. Add egg, milk, butter, whisk until smooth. Cook small rounds in buttered pan until bubbles form, flip. Stack and serve with toppings.</p>
+                <p>Fry onion and pepper. Add garlic, spices, tomatoes. Simmer 10 mins. Make wells, crack in eggs. Cover, cook 5-8 mins. Serve with coriander and bread.</p>
             </div>
         </div>
     </div>
         </div>
-
         <div class="section">
             <h2>Lunches</h2>
             <div class="day-meal"><span class="day-label">Mon</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Tomato soup</h3>
+            <h3>Chicken noodle soup</h3>
             <span class="recipe-meta">25 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>2 tins chopped tomatoes</li><li>1 onion, chopped</li><li>2 garlic cloves</li><li>500ml veg stock</li><li>1 tsp sugar</li><li>2 tbsp olive oil</li><li>Fresh basil</li></ul>
+                <ul><li>2 chicken breasts</li><li>1.5L chicken stock</li><li>2 carrots, sliced</li><li>2 celery sticks</li><li>100g egg noodles</li><li>Fresh parsley</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Soften onion and garlic in oil. Add tomatoes, stock, sugar. Simmer 15 mins. Blend smooth, season, serve with basil and crusty bread.</p>
+                <p>Poach chicken in stock 15 mins. Shred chicken. Add carrots, celery, simmer 5 mins. Add noodles, cook 4 mins. Add chicken, parsley.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Tue</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Egg fried rice</h3>
-            <span class="recipe-meta">15 mins | Serves 2</span>
+            <h3>Pea & mint soup</h3>
+            <span class="recipe-meta">20 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>300g cooked rice (cold)</li><li>2 eggs, beaten</li><li>100g peas</li><li>2 spring onions, sliced</li><li>2 tbsp soy sauce</li><li>2 tbsp oil</li></ul>
+                <ul><li>500g frozen peas</li><li>1 onion, chopped</li><li>750ml veg stock</li><li>Fresh mint</li><li>100ml cream</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Heat oil in wok, scramble eggs, set aside. Stir-fry rice 2 mins, add peas, cook 2 mins. Add eggs, spring onions, soy sauce. Toss together.</p>
+                <p>Soften onion. Add peas, stock, simmer 5 mins. Blend with mint. Swirl in cream, season.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Wed</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Avocado on toast</h3>
-            <span class="recipe-meta">5 mins | Serves 1</span>
+            <h3>French onion soup</h3>
+            <span class="recipe-meta">45 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>1 ripe avocado</li><li>2 slices sourdough, toasted</li><li>Lemon juice</li><li>Chilli flakes</li><li>Salt & pepper</li></ul>
+                <ul><li>4 onions, sliced</li><li>50g butter</li><li>1L beef stock</li><li>100ml white wine</li><li>4 slices baguette</li><li>100g gruyere</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Mash avocado with lemon juice, salt, pepper. Spread on toast, sprinkle with chilli flakes. Top with poached egg if desired.</p>
+                <p>Cook onions in butter slowly 30 mins until caramelized. Add wine, reduce. Add stock, simmer 10 mins. Top with toast and cheese, grill.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Thu</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Cheese on toast</h3>
-            <span class="recipe-meta">5 mins | Serves 1</span>
+            <h3>Minestrone</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>2 slices bread</li><li>75g cheddar, grated</li><li>Worcestershire sauce (optional)</li></ul>
+                <ul><li>1 onion, diced</li><li>2 carrots, diced</li><li>2 celery sticks</li><li>1 tin chopped tomatoes</li><li>1 tin cannellini beans</li><li>100g pasta</li><li>1L veg stock</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Toast bread one side under grill. Flip, cover with cheese, dash of Worcestershire. Grill until bubbling and golden.</p>
+                <p>Soften onion, carrots, celery 5 mins. Add tomatoes, beans, stock. Simmer 15 mins. Add pasta, cook 10 mins. Season, serve with parmesan.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Fri</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Smoked salmon bagel</h3>
-            <span class="recipe-meta">5 mins | Serves 1</span>
+            <h3>Broccoli & stilton soup</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>1 bagel, halved and toasted</li><li>2 tbsp cream cheese</li><li>2 slices smoked salmon</li><li>Capers</li><li>Lemon wedge</li><li>Black pepper</li></ul>
+                <ul><li>1 large broccoli, chopped</li><li>1 onion, chopped</li><li>1L veg stock</li><li>100g stilton, crumbled</li><li>100ml cream</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Spread cream cheese on bagel halves. Top with smoked salmon, capers, squeeze of lemon and pepper.</p>
+                <p>Soften onion. Add broccoli, stock, simmer 15 mins. Blend smooth. Stir in stilton and cream until melted.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Sat</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Leftover roast sandwich</h3>
-            <span class="recipe-meta">5 mins | Serves 1</span>
+            <h3>Sweetcorn chowder</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>Sliced roast meat</li><li>2 slices bread</li><li>Stuffing</li><li>Gravy or cranberry sauce</li><li>Butter</li></ul>
+                <ul><li>2 tins sweetcorn</li><li>4 rashers bacon, chopped</li><li>1 onion, diced</li><li>2 potatoes, diced</li><li>500ml chicken stock</li><li>200ml cream</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Butter bread, layer with cold sliced meat, stuffing, and sauce. Press together.</p>
+                <p>Fry bacon until crispy. Add onion, potatoes, cook 5 mins. Add stock, sweetcorn, simmer 15 mins. Add cream, blend half, mix back.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Sun</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Beans on toast</h3>
-            <span class="recipe-meta">5 mins | Serves 1</span>
+            <h3>Roasted red pepper soup</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>1 tin baked beans</li><li>2 slices bread</li><li>Butter</li><li>Grated cheese (optional)</li></ul>
+                <ul><li>4 red peppers, halved</li><li>1 onion, chopped</li><li>2 garlic cloves</li><li>750ml veg stock</li><li>1 tbsp balsamic vinegar</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Heat beans in pan or microwave. Toast and butter bread. Pour beans over toast, top with cheese if using.</p>
+                <p>Roast peppers at 200C 20 mins until charred. Peel. Soften onion, garlic. Add peppers, stock. Simmer 10 mins. Blend, add vinegar.</p>
             </div>
         </div>
     </div></div>
         </div>
-
         <div class="section">
             <h2>Dinners</h2>
             <div class="day-meal"><span class="day-label">Mon</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Cottage Pie</h3>
+            <h3>Chicken Cacciatore</h3>
+            <span class="recipe-meta">45 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>8 chicken thighs</li><li>1 onion, sliced</li><li>2 peppers, sliced</li><li>2 tins tomatoes</li><li>100ml red wine</li><li>Olives</li><li>Fresh basil</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Brown chicken. Add onion, peppers, cook 5 mins. Add tomatoes, wine, olives. Cover, simmer 30 mins. Serve with crusty bread.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Fish Pie</h3>
             <span class="recipe-meta">1 hour | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>500g beef mince</li><li>1 onion, diced</li><li>2 carrots, diced</li><li>400ml beef stock</li><li>2 tbsp tomato puree</li><li>1 tsp Worcestershire sauce</li><li>800g potatoes</li><li>50g butter</li><li>50ml milk</li></ul>
+                <ul><li>400g mixed fish (salmon, cod, smoked haddock)</li><li>200g prawns</li><li>500ml milk</li><li>50g butter</li><li>50g flour</li><li>800g potatoes</li><li>Fresh parsley</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Brown mince, add onion, carrots. Add stock, puree, Worcestershire, simmer 20 mins. Boil potatoes, mash with butter and milk. Put mince in dish, top with mash. Bake 200C 25 mins until golden.</p>
+                <p>Poach fish in milk. Make sauce with butter, flour, milk. Add fish, prawns, parsley. Top with mash. Bake 200C 25 mins.</p>
             </div>
         </div>
-    </div></div><div class="day-meal"><span class="day-label">Tue</span>
+    </div></div><div class="day-meal"><span class="day-label">Wed</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Vegetable Fajitas</h3>
+            <span class="recipe-meta">25 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>2 peppers, sliced</li><li>1 courgette, sliced</li><li>1 onion, sliced</li><li>1 tin black beans</li><li>2 tbsp fajita seasoning</li><li>8 tortillas</li><li>Sour cream, salsa</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Fry vegetables with seasoning 10 mins. Add beans, heat through. Serve in tortillas with sour cream and salsa.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Thu</span>
+    <div class="recipe-card">
+        <div class="recipe-header">
+            <h3>Lemon Herb Chicken</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
+        </div>
+        <div class="recipe-body">
+            <div class="ingredients">
+                <strong>Ingredients:</strong>
+                <ul><li>4 chicken breasts</li><li>2 lemons, juiced</li><li>4 garlic cloves</li><li>Fresh rosemary, thyme</li><li>Olive oil</li><li>Roast potatoes</li><li>Salad</li></ul>
+            </div>
+            <div class="method">
+                <strong>Method:</strong>
+                <p>Marinate chicken in lemon, garlic, herbs, oil. Bake at 200C 25 mins. Serve with roast potatoes and salad.</p>
+            </div>
+        </div>
+    </div></div><div class="day-meal"><span class="day-label">Fri</span>
     <div class="recipe-card">
         <div class="recipe-header">
             <h3>Fish Tacos</h3>
@@ -298,96 +251,47 @@
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>400g white fish fillets</li><li>2 tsp cumin</li><li>1 tsp paprika</li><li>8 small tortillas</li><li>1/4 cabbage, shredded</li><li>Lime</li><li>Sour cream</li><li>Fresh coriander</li></ul>
+                <ul><li>400g white fish</li><li>2 tsp cumin</li><li>1 tsp paprika</li><li>8 tortillas</li><li>Cabbage, shredded</li><li>Lime</li><li>Sour cream</li><li>Coriander</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Season fish with cumin, paprika, salt. Pan fry or grill 3-4 mins each side. Flake fish. Warm tortillas. Fill with cabbage, fish, sour cream, coriander, lime juice.</p>
-            </div>
-        </div>
-    </div></div><div class="day-meal"><span class="day-label">Wed</span>
-    <div class="recipe-card">
-        <div class="recipe-header">
-            <h3>Mushroom Risotto</h3>
-            <span class="recipe-meta">35 mins | Serves 4</span>
-        </div>
-        <div class="recipe-body">
-            <div class="ingredients">
-                <strong>Ingredients:</strong>
-                <ul><li>300g risotto rice</li><li>300g mixed mushrooms, sliced</li><li>1 onion, diced</li><li>2 garlic cloves</li><li>150ml white wine</li><li>1L hot veg stock</li><li>50g parmesan</li><li>2 tbsp butter</li></ul>
-            </div>
-            <div class="method">
-                <strong>Method:</strong>
-                <p>Fry mushrooms in butter, set aside. Cook onion and garlic, add rice, stir 1 min. Add wine, stir until absorbed. Add stock ladle by ladle, stirring, until rice is creamy (20 mins). Stir in mushrooms, parmesan, butter.</p>
-            </div>
-        </div>
-    </div></div><div class="day-meal"><span class="day-label">Thu</span>
-    <div class="recipe-card">
-        <div class="recipe-header">
-            <h3>Chicken Korma</h3>
-            <span class="recipe-meta">35 mins | Serves 4</span>
-        </div>
-        <div class="recipe-body">
-            <div class="ingredients">
-                <strong>Ingredients:</strong>
-                <ul><li>500g chicken breast, cubed</li><li>1 onion, sliced</li><li>3 tbsp korma paste</li><li>200ml coconut cream</li><li>100g ground almonds</li><li>50g sultanas</li><li>Fresh coriander</li><li>Rice to serve</li></ul>
-            </div>
-            <div class="method">
-                <strong>Method:</strong>
-                <p>Fry chicken until golden, set aside. Cook onion 5 mins, add korma paste, cook 1 min. Add coconut cream, almonds, sultanas. Return chicken, simmer 15 mins. Serve with rice and coriander.</p>
-            </div>
-        </div>
-    </div></div><div class="day-meal"><span class="day-label">Fri</span>
-    <div class="recipe-card">
-        <div class="recipe-header">
-            <h3>Lasagne</h3>
-            <span class="recipe-meta">1 hour 15 mins | Serves 6</span>
-        </div>
-        <div class="recipe-body">
-            <div class="ingredients">
-                <strong>Ingredients:</strong>
-                <ul><li>500g beef mince</li><li>1 onion, diced</li><li>2 tins chopped tomatoes</li><li>Lasagne sheets</li><li>50g butter</li><li>50g flour</li><li>500ml milk</li><li>100g parmesan</li><li>100g mozzarella</li></ul>
-            </div>
-            <div class="method">
-                <strong>Method:</strong>
-                <p>Make meat sauce: brown mince, add onion, tomatoes, simmer 20 mins. Make white sauce: melt butter, add flour, gradually add milk, stir until thick. Layer: meat, pasta, white sauce. Repeat. Top with cheese. Bake 180C 40 mins.</p>
+                <p>Season fish, pan fry 3-4 mins each side. Flake. Serve in tortillas with cabbage, sour cream, coriander, lime.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Sat</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Lamb Koftas</h3>
+            <h3>Chicken Goujons</h3>
             <span class="recipe-meta">25 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>500g lamb mince</li><li>1 onion, grated</li><li>2 garlic cloves, crushed</li><li>1 tsp cumin</li><li>1 tsp coriander</li><li>Fresh mint</li><li>Pitta bread</li><li>Tzatziki, salad to serve</li></ul>
+                <ul><li>4 chicken breasts, cut into strips</li><li>100g flour</li><li>2 eggs</li><li>150g breadcrumbs</li><li>Oil for frying</li><li>Chips</li><li>Peas</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Mix lamb, onion, garlic, spices, mint. Shape into sausages around skewers. Grill or BBQ 10-12 mins turning. Serve in pitta with tzatziki and salad.</p>
+                <p>Coat chicken in flour, egg, breadcrumbs. Shallow fry 4-5 mins until golden. Serve with chips and peas.</p>
             </div>
         </div>
     </div></div><div class="day-meal"><span class="day-label">Sun</span>
     <div class="recipe-card">
         <div class="recipe-header">
-            <h3>Sausage Casserole</h3>
-            <span class="recipe-meta">45 mins | Serves 4</span>
+            <h3>Cauliflower Cheese</h3>
+            <span class="recipe-meta">35 mins | Serves 4</span>
         </div>
         <div class="recipe-body">
             <div class="ingredients">
                 <strong>Ingredients:</strong>
-                <ul><li>8 pork sausages</li><li>1 onion, sliced</li><li>2 peppers, sliced</li><li>2 tins chopped tomatoes</li><li>1 tin cannellini beans</li><li>2 tsp smoked paprika</li><li>Crusty bread to serve</li></ul>
+                <ul><li>1 large cauliflower</li><li>50g butter</li><li>50g flour</li><li>500ml milk</li><li>200g cheddar</li><li>1 tsp mustard</li></ul>
             </div>
             <div class="method">
                 <strong>Method:</strong>
-                <p>Brown sausages in pan, set aside. Cook onion and peppers 5 mins. Add tomatoes, paprika, beans, return sausages. Cover, simmer 30 mins. Serve with crusty bread.</p>
+                <p>Boil cauliflower 5 mins. Make sauce with butter, flour, milk, most of cheese and mustard. Put cauliflower in dish, pour over sauce, top with cheese. Bake 200C 20 mins.</p>
             </div>
         </div>
     </div></div>
         </div>
-
         
     </div>
 </body>

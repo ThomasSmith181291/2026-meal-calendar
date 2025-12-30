@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Week 27 Shopping List</title>
+    <style>
+        @page { size: A4; margin: 10mm; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            padding: 10px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #2c5530;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .header-left h1 {
+            font-size: 18px;
+            color: #2c5530;
+            margin-bottom: 3px;
+        }
+        .header-left .dates { color: #666; font-size: 12px; }
+        .header-left .shop-type {
+            background: #2c5530;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .meals-summary {
+            font-size: 9px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .qr-section {
+            text-align: center;
+        }
+        .qr-section img {
+            width: 80px;
+            height: 80px;
+        }
+        .qr-section p {
+            font-size: 9px;
+            color: #666;
+            margin-top: 3px;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .category {
+            break-inside: avoid;
+            margin-bottom: 8px;
+        }
+        .category h3 {
+            background: #e8f5e9;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: #2c5530;
+            margin-bottom: 3px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        td {
+            padding: 2px 4px;
+            border-bottom: 1px solid #eee;
+            font-size: 10px;
+        }
+        .checkbox { width: 20px; text-align: center; }
+        .qty { width: 50px; color: #666; text-align: right; }
+        .price { width: 55px; text-align: right; color: #2c5530; font-weight: bold; }
+        .budget {
+            text-align: right;
+            margin-top: 10px;
+            padding-top: 5px;
+            border-top: 2px solid #2c5530;
+            font-size: 14px;
+            font-weight: bold;
+            color: #2c5530;
+        }
+        @media print {
+            body { padding: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>Week 27 - June</h1>
+            <div class="dates">29 Jun - 05 Jul 2026</div>
+            <div class="shop-type">Top-up Shop</div>
+            <div class="meals-summary">Breakfast: Bacon & Egg Muffin | Roast: Roast Pork</div>
+        </div>
+        <div class="qr-section">
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://thomassmith181291.github.io/2026-meal-calendar/week-27.html" alt="QR Code">
+            <p>Scan for recipes</p>
+        </div>
+    </div>
+
+    <div class="content">
+        
+    <div class="category">
+        <h3>🥩 MEAT</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>500g lamb mince</td><td class="qty"></td><td class="price">~£4.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Sliced chicken</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 cooked chicken breasts, shredded</td><td class="qty"></td><td class="price">~£2.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 rashers bacon</td><td class="qty"></td><td class="price">~£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 slices ham</td><td class="qty"></td><td class="price">~£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>3 rashers bacon</td><td class="qty"></td><td class="price">~£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 rashers bacon</td><td class="qty"></td><td class="price">~£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 slices ham</td><td class="qty"></td><td class="price">~£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2kg pork shoulder, skin scored</td><td class="qty"></td><td class="price">~£3.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>8 lamb chops</td><td class="qty"></td><td class="price">~£4.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>500g lamb leg, cubed</td><td class="qty"></td><td class="price">~£4.50</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🐟 FISH</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>1 tin tuna, drained</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 salmon fillets</td><td class="qty"></td><td class="price">~£3.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>400g prawns</td><td class="qty"></td><td class="price">~£3.00</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🧀 DAIRY & EGGS</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>Whole milk</td><td class="qty">2x 2L</td><td class="price">£2.40</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Oat milk</td><td class="qty">1L</td><td class="price">£1.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Butter</td><td class="qty">250g</td><td class="price">£2.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 slices cheese</td><td class="qty"></td><td class="price">~£1.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>100ml cream</td><td class="qty"></td><td class="price">~£1.20</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>50g cheddar, grated</td><td class="qty"></td><td class="price">~£1.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Butter</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>50g cheddar, sliced</td><td class="qty"></td><td class="price">~£1.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>100g gruyere, grated</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 tbsp butter</td><td class="qty">x2</td><td class="price">~£1.60</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>150ml milk</td><td class="qty"></td><td class="price">~£0.60</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>100g feta</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>400ml coconut milk</td><td class="qty"></td><td class="price">~£0.60</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>200ml milk</td><td class="qty"></td><td class="price">~£0.60</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 eggs</td><td class="qty">x1</td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 eggs</td><td class="qty">x1</td><td class="price">~£0.50</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🍞 BREAD & BAKERY</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>White sliced loaf</td><td class="qty">1</td><td class="price">£1.20</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Crusty bread</td><td class="qty">1</td><td class="price">£1.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Wraps/tortillas</td><td class="qty">8 pack</td><td class="price">£1.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Porridge oats</td><td class="qty">1kg</td><td class="price">£1.20</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 English muffins</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 slices bread</td><td class="qty">x2</td><td class="price">~£1.60</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 slices bread, toasted</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>3 slices bread, toasted</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 slices bread</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Bread</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Pitta bread</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Naan bread</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🥬 FRESH PRODUCE</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>Onions</td><td class="qty">1kg bag</td><td class="price">£1.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Garlic</td><td class="qty">2 bulbs</td><td class="price">£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Potatoes</td><td class="qty">2.5kg</td><td class="price">£2.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Bananas</td><td class="qty">6</td><td class="price">£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>400g mushrooms, sliced</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 garlic cloves</td><td class="qty">x3</td><td class="price">~£1.20</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Lettuce</td><td class="qty">x2</td><td class="price">~£1.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>1 tomato, sliced</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Lettuce, tomato</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Broccoli</td><td class="qty"></td><td class="price">~£1.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>4 large peppers</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>1 tin chickpeas</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Green beans</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 peppers, sliced</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>100g mangetout</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>2 pak choi</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>200g spinach</td><td class="qty"></td><td class="price">~£1.00</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🌿 FRESH HERBS</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>Fresh thyme</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Fresh mint</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Fresh mint, chopped</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Fresh sage</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Fresh rosemary</td><td class="qty"></td><td class="price">~£0.80</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🍝 PASTA, RICE & NOODLES</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>1 tbsp rice vinegar</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Rice</td><td class="qty">x2</td><td class="price">~£1.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>200g rice, cooked</td><td class="qty"></td><td class="price">~£0.50</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Noodles</td><td class="qty"></td><td class="price">~£0.60</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🥤 DRINKS</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>Fizzy drinks</td><td class="qty">2x 2L</td><td class="price">£2.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Squash</td><td class="qty">1L</td><td class="price">£1.50</td></tr>
+</table>
+    </div>
+    <div class="category">
+        <h3>🍪 SNACKS</h3>
+        <table><tr><td class="checkbox">&#9744;</td><td>Crisps multipack</td><td class="qty">6</td><td class="price">£2.00</td></tr>
+<tr><td class="checkbox">&#9744;</td><td>Biscuits</td><td class="qty">1 pack</td><td class="price">£1.00</td></tr>
+</table>
+    </div>
+    </div>
+
+    <div class="budget">
+        Estimated Budget: ~£90
+    </div>
+</body>
+</html>
