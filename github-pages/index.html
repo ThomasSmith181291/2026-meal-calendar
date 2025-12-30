@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 Meal Calendar</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: #2c5530;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .weeks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+        .week-card {
+            display: block;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .week-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        .week-num {
+            display: block;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c5530;
+            margin-bottom: 5px;
+        }
+        .week-dates {
+            display: block;
+            font-size: 0.85em;
+            color: #666;
+        }
+        .roast-badge {
+            display: inline-block;
+            background: #e91e63;
+            color: white;
+            font-size: 0.7em;
+            padding: 3px 8px;
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+        .legend {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2026 Meal Calendar</h1>
+        <p class="subtitle">Click any week to see recipes with links</p>
+
+        <div class="weeks-grid">
+            
+        <a href="week-01.html" class="week-card">
+            <span class="week-num">Week 1</span>
+            <span class="week-dates">January 1-4, 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-02.html" class="week-card">
+            <span class="week-num">Week 2</span>
+            <span class="week-dates">05 Jan - 11 Jan 2026</span>
+            
+        </a>
+        <a href="week-03.html" class="week-card">
+            <span class="week-num">Week 3</span>
+            <span class="week-dates">12 Jan - 18 Jan 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-04.html" class="week-card">
+            <span class="week-num">Week 4</span>
+            <span class="week-dates">19 Jan - 25 Jan 2026</span>
+            
+        </a>
+        <a href="week-05.html" class="week-card">
+            <span class="week-num">Week 5</span>
+            <span class="week-dates">26 Jan - 01 Feb 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-06.html" class="week-card">
+            <span class="week-num">Week 6</span>
+            <span class="week-dates">02 Feb - 08 Feb 2026</span>
+            
+        </a>
+        <a href="week-07.html" class="week-card">
+            <span class="week-num">Week 7</span>
+            <span class="week-dates">09 Feb - 15 Feb 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-08.html" class="week-card">
+            <span class="week-num">Week 8</span>
+            <span class="week-dates">16 Feb - 22 Feb 2026</span>
+            
+        </a>
+        <a href="week-09.html" class="week-card">
+            <span class="week-num">Week 9</span>
+            <span class="week-dates">23 Feb - 01 Mar 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-10.html" class="week-card">
+            <span class="week-num">Week 10</span>
+            <span class="week-dates">02 Mar - 08 Mar 2026</span>
+            
+        </a>
+        <a href="week-11.html" class="week-card">
+            <span class="week-num">Week 11</span>
+            <span class="week-dates">09 Mar - 15 Mar 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-12.html" class="week-card">
+            <span class="week-num">Week 12</span>
+            <span class="week-dates">16 Mar - 22 Mar 2026</span>
+            
+        </a>
+        <a href="week-13.html" class="week-card">
+            <span class="week-num">Week 13</span>
+            <span class="week-dates">23 Mar - 29 Mar 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-14.html" class="week-card">
+            <span class="week-num">Week 14</span>
+            <span class="week-dates">30 Mar - 05 Apr 2026</span>
+            
+        </a>
+        <a href="week-15.html" class="week-card">
+            <span class="week-num">Week 15</span>
+            <span class="week-dates">06 Apr - 12 Apr 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-16.html" class="week-card">
+            <span class="week-num">Week 16</span>
+            <span class="week-dates">13 Apr - 19 Apr 2026</span>
+            
+        </a>
+        <a href="week-17.html" class="week-card">
+            <span class="week-num">Week 17</span>
+            <span class="week-dates">20 Apr - 26 Apr 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-18.html" class="week-card">
+            <span class="week-num">Week 18</span>
+            <span class="week-dates">27 Apr - 03 May 2026</span>
+            
+        </a>
+        <a href="week-19.html" class="week-card">
+            <span class="week-num">Week 19</span>
+            <span class="week-dates">04 May - 10 May 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-20.html" class="week-card">
+            <span class="week-num">Week 20</span>
+            <span class="week-dates">11 May - 17 May 2026</span>
+            
+        </a>
+        <a href="week-21.html" class="week-card">
+            <span class="week-num">Week 21</span>
+            <span class="week-dates">18 May - 24 May 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-22.html" class="week-card">
+            <span class="week-num">Week 22</span>
+            <span class="week-dates">25 May - 31 May 2026</span>
+            
+        </a>
+        <a href="week-23.html" class="week-card">
+            <span class="week-num">Week 23</span>
+            <span class="week-dates">01 Jun - 07 Jun 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-24.html" class="week-card">
+            <span class="week-num">Week 24</span>
+            <span class="week-dates">08 Jun - 14 Jun 2026</span>
+            
+        </a>
+        <a href="week-25.html" class="week-card">
+            <span class="week-num">Week 25</span>
+            <span class="week-dates">15 Jun - 21 Jun 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-26.html" class="week-card">
+            <span class="week-num">Week 26</span>
+            <span class="week-dates">22 Jun - 28 Jun 2026</span>
+            
+        </a>
+        <a href="week-27.html" class="week-card">
+            <span class="week-num">Week 27</span>
+            <span class="week-dates">29 Jun - 05 Jul 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-28.html" class="week-card">
+            <span class="week-num">Week 28</span>
+            <span class="week-dates">06 Jul - 12 Jul 2026</span>
+            
+        </a>
+        <a href="week-29.html" class="week-card">
+            <span class="week-num">Week 29</span>
+            <span class="week-dates">13 Jul - 19 Jul 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-30.html" class="week-card">
+            <span class="week-num">Week 30</span>
+            <span class="week-dates">20 Jul - 26 Jul 2026</span>
+            
+        </a>
+        <a href="week-31.html" class="week-card">
+            <span class="week-num">Week 31</span>
+            <span class="week-dates">27 Jul - 02 Aug 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-32.html" class="week-card">
+            <span class="week-num">Week 32</span>
+            <span class="week-dates">03 Aug - 09 Aug 2026</span>
+            
+        </a>
+        <a href="week-33.html" class="week-card">
+            <span class="week-num">Week 33</span>
+            <span class="week-dates">10 Aug - 16 Aug 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-34.html" class="week-card">
+            <span class="week-num">Week 34</span>
+            <span class="week-dates">17 Aug - 23 Aug 2026</span>
+            
+        </a>
+        <a href="week-35.html" class="week-card">
+            <span class="week-num">Week 35</span>
+            <span class="week-dates">24 Aug - 30 Aug 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-36.html" class="week-card">
+            <span class="week-num">Week 36</span>
+            <span class="week-dates">31 Aug - 06 Sep 2026</span>
+            
+        </a>
+        <a href="week-37.html" class="week-card">
+            <span class="week-num">Week 37</span>
+            <span class="week-dates">07 Sep - 13 Sep 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-38.html" class="week-card">
+            <span class="week-num">Week 38</span>
+            <span class="week-dates">14 Sep - 20 Sep 2026</span>
+            
+        </a>
+        <a href="week-39.html" class="week-card">
+            <span class="week-num">Week 39</span>
+            <span class="week-dates">21 Sep - 27 Sep 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-40.html" class="week-card">
+            <span class="week-num">Week 40</span>
+            <span class="week-dates">28 Sep - 04 Oct 2026</span>
+            
+        </a>
+        <a href="week-41.html" class="week-card">
+            <span class="week-num">Week 41</span>
+            <span class="week-dates">05 Oct - 11 Oct 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-42.html" class="week-card">
+            <span class="week-num">Week 42</span>
+            <span class="week-dates">12 Oct - 18 Oct 2026</span>
+            
+        </a>
+        <a href="week-43.html" class="week-card">
+            <span class="week-num">Week 43</span>
+            <span class="week-dates">19 Oct - 25 Oct 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-44.html" class="week-card">
+            <span class="week-num">Week 44</span>
+            <span class="week-dates">26 Oct - 01 Nov 2026</span>
+            
+        </a>
+        <a href="week-45.html" class="week-card">
+            <span class="week-num">Week 45</span>
+            <span class="week-dates">02 Nov - 08 Nov 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-46.html" class="week-card">
+            <span class="week-num">Week 46</span>
+            <span class="week-dates">09 Nov - 15 Nov 2026</span>
+            
+        </a>
+        <a href="week-47.html" class="week-card">
+            <span class="week-num">Week 47</span>
+            <span class="week-dates">16 Nov - 22 Nov 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-48.html" class="week-card">
+            <span class="week-num">Week 48</span>
+            <span class="week-dates">23 Nov - 29 Nov 2026</span>
+            
+        </a>
+        <a href="week-49.html" class="week-card">
+            <span class="week-num">Week 49</span>
+            <span class="week-dates">30 Nov - 06 Dec 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-50.html" class="week-card">
+            <span class="week-num">Week 50</span>
+            <span class="week-dates">07 Dec - 13 Dec 2026</span>
+            
+        </a>
+        <a href="week-51.html" class="week-card">
+            <span class="week-num">Week 51</span>
+            <span class="week-dates">14 Dec - 20 Dec 2026</span>
+             <span class="roast-badge">Roast</span>
+        </a>
+        <a href="week-52.html" class="week-card">
+            <span class="week-num">Week 52</span>
+            <span class="week-dates">21 Dec - 27 Dec 2026</span>
+            
+        </a>
+        </div>
+
+        <div class="legend">
+            <span style="color:#e91e63;font-weight:bold">Pink badge</span> = Sunday roast for 7 people
+        </div>
+    </div>
+</body>
+</html>
