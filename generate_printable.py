@@ -1,243 +1,337 @@
 """
 Generate printable A4 shopping lists with QR codes
-Shopping lists are derived from actual recipe ingredients
+BIG SHOP (weeks 1, 5, 9, etc.) = All meat/fish for 4 weeks + monthly items
+TOP-UP (weeks 2,3,4, etc.) = Fresh produce, dairy, bread only
 """
 
 import os
 import datetime
 import random
 import re
+from collections import defaultdict
 
-random.seed(2026)  # Same seed as generate_pages.py for consistency
+random.seed(2026)
 
 output_dir = r"C:\Users\Little Nineveh\2026-meal-calendar\printable"
 os.makedirs(output_dir, exist_ok=True)
 
-# Your GitHub Pages URL
 BASE_URL = "https://thomassmith181291.github.io/2026-meal-calendar"
 
 # ============================================================
-# COMPLETE RECIPE DATABASE (same as generate_pages.py)
+# RECIPE DATABASE (ingredients only - for shopping list extraction)
 # ============================================================
 
 lunch_recipes = {
-    "Leek & potato soup": {"ingredients": ["2 leeks, sliced", "3 potatoes, diced", "1 onion, chopped", "1L chicken stock", "2 tbsp butter", "100ml cream"]},
-    "Tomato soup": {"ingredients": ["2 tins chopped tomatoes", "1 onion, chopped", "2 garlic cloves", "500ml veg stock", "1 tsp sugar", "Fresh basil"]},
-    "Carrot & coriander soup": {"ingredients": ["500g carrots, chopped", "1 onion, chopped", "1L veg stock", "1 tsp ground coriander", "Fresh coriander"]},
-    "Butternut squash soup": {"ingredients": ["1 butternut squash, cubed", "1 onion, chopped", "2 garlic cloves", "1L veg stock", "1 tsp cumin"]},
-    "Chicken noodle soup": {"ingredients": ["2 chicken breasts", "1.5L chicken stock", "2 carrots, sliced", "2 celery sticks", "100g egg noodles", "Fresh parsley"]},
-    "Pea & mint soup": {"ingredients": ["500g frozen peas", "1 onion, chopped", "750ml veg stock", "Fresh mint", "100ml cream"]},
-    "French onion soup": {"ingredients": ["4 onions, sliced", "50g butter", "1L beef stock", "100ml white wine", "4 slices baguette", "100g gruyere"]},
-    "Minestrone": {"ingredients": ["1 onion, diced", "2 carrots, diced", "2 celery sticks", "1 tin chopped tomatoes", "1 tin cannellini beans", "100g pasta", "1L veg stock"]},
-    "Broccoli & stilton soup": {"ingredients": ["1 large broccoli, chopped", "1 onion, chopped", "1L veg stock", "100g stilton, crumbled", "100ml cream"]},
-    "Sweetcorn chowder": {"ingredients": ["2 tins sweetcorn", "4 rashers bacon, chopped", "1 onion, diced", "2 potatoes, diced", "500ml chicken stock", "200ml cream"]},
-    "Roasted red pepper soup": {"ingredients": ["4 red peppers, halved", "1 onion, chopped", "2 garlic cloves", "750ml veg stock", "1 tbsp balsamic vinegar"]},
-    "Mushroom soup": {"ingredients": ["400g mushrooms, sliced", "1 onion, chopped", "2 garlic cloves", "750ml veg stock", "100ml cream", "Fresh thyme"]},
-    "Ham & cheese toastie": {"ingredients": ["2 slices bread", "2 slices ham", "50g cheddar, grated", "Butter"]},
-    "BLT sandwich": {"ingredients": ["3 rashers bacon", "2 slices bread, toasted", "Lettuce", "1 tomato, sliced", "Mayonnaise"]},
-    "Tuna melt": {"ingredients": ["1 tin tuna, drained", "2 tbsp mayo", "2 slices bread", "50g cheddar, sliced"]},
-    "Club sandwich": {"ingredients": ["3 slices bread, toasted", "2 rashers bacon", "Sliced chicken", "Lettuce, tomato", "Mayo"]},
-    "Croque monsieur": {"ingredients": ["4 slices bread", "4 slices ham", "100g gruyere, grated", "2 tbsp butter", "1 tbsp flour", "150ml milk", "Dijon mustard"]},
-    "Coronation chicken sandwich": {"ingredients": ["2 cooked chicken breasts, shredded", "3 tbsp mayo", "1 tbsp curry powder", "1 tbsp mango chutney", "Bread", "Lettuce"]},
-    "Egg mayo sandwich": {"ingredients": ["4 eggs, hard boiled", "3 tbsp mayonnaise", "1 tsp mustard", "Salt & pepper", "Bread", "Cress"]},
-    "Cheese & pickle sandwich": {"ingredients": ["2 slices bread", "75g mature cheddar, sliced", "2 tbsp Branston pickle", "Butter"]},
-    "Welsh rarebit": {"ingredients": ["200g mature cheddar, grated", "25g butter", "1 tbsp flour", "100ml beer or milk", "1 tsp mustard", "4 slices bread"]},
-    "Prawn mayo sandwich": {"ingredients": ["100g cooked prawns", "2 tbsp mayo", "Squeeze lemon", "Bread", "Lettuce"]},
-    "Smoked salmon bagel": {"ingredients": ["1 bagel", "2 tbsp cream cheese", "2 slices smoked salmon", "Capers", "Lemon"]},
-    "Chicken Caesar wrap": {"ingredients": ["1 chicken breast, cooked and sliced", "1 wrap", "Romaine lettuce", "Parmesan, shaved", "Caesar dressing"]},
-    "Ham salad wrap": {"ingredients": ["2 slices ham", "1 wrap", "Lettuce", "Tomato", "Cucumber", "Mayo"]},
-    "Hummus & veg wrap": {"ingredients": ["3 tbsp hummus", "1 wrap", "Grated carrot", "Cucumber", "Red pepper"]},
-    "Cheese toastie": {"ingredients": ["2 slices bread", "75g cheddar, grated", "Butter"]},
-    "Cheese omelette": {"ingredients": ["3 eggs", "50g cheese, grated", "1 tbsp butter", "Salt & pepper"]},
-    "Jacket potato with beans": {"ingredients": ["1 large potato", "1 tin baked beans", "Butter", "50g cheese, grated"]},
-    "Jacket potato with tuna mayo": {"ingredients": ["1 large potato", "1 tin tuna", "2 tbsp mayo", "Sweetcorn", "Butter"]},
-    "Jacket potato with cheese & coleslaw": {"ingredients": ["1 large potato", "75g cheddar, grated", "3 tbsp coleslaw", "Butter"]},
-    "Beans on toast": {"ingredients": ["1 tin baked beans", "2 slices bread", "Butter", "Cheese (optional)"]},
-    "Cheese on toast": {"ingredients": ["2 slices bread", "75g cheddar, grated", "Worcestershire sauce"]},
-    "Sardines on toast": {"ingredients": ["1 tin sardines", "2 slices bread", "Butter", "Lemon", "Black pepper"]},
-    "Egg fried rice": {"ingredients": ["300g cooked rice (cold)", "2 eggs, beaten", "100g peas", "2 spring onions", "2 tbsp soy sauce"]},
-    "Quesadilla": {"ingredients": ["2 tortillas", "75g cheddar, grated", "Sliced peppers", "Salsa, sour cream"]},
-    "Avocado on toast": {"ingredients": ["1 avocado", "2 slices sourdough", "Lemon juice", "Chilli flakes", "Salt"]},
-    "Greek salad": {"ingredients": ["1 cucumber, chunked", "4 tomatoes, chunked", "1 red onion, sliced", "100g feta", "Olives", "Olive oil", "Oregano"]},
-    "Caesar salad": {"ingredients": ["1 romaine lettuce", "1 chicken breast, cooked and sliced", "Croutons", "Parmesan", "Caesar dressing"]},
-    "Nicoise salad": {"ingredients": ["200g new potatoes", "100g green beans", "2 eggs, boiled", "1 tin tuna", "Olives", "Olive oil", "Lemon"]},
-    "Ploughman's lunch": {"ingredients": ["75g cheddar", "2 slices ham", "Branston pickle", "Crusty bread", "Apple", "Celery"]},
-    "Leftover roast sandwich": {"ingredients": ["Sliced roast meat", "2 slices bread", "Stuffing", "Gravy or cranberry sauce"]},
+    "Leek & potato soup": {"ingredients": ["2 leeks", "500g potatoes", "1 onion", "100ml cream"], "protein": None},
+    "Tomato soup": {"ingredients": ["2 tins chopped tomatoes", "1 onion", "2 garlic cloves"], "protein": None},
+    "Carrot & coriander soup": {"ingredients": ["500g carrots", "1 onion", "Fresh coriander"], "protein": None},
+    "Butternut squash soup": {"ingredients": ["1 butternut squash", "1 onion", "2 garlic cloves"], "protein": None},
+    "Chicken noodle soup": {"ingredients": ["2 chicken breasts", "2 carrots", "2 celery sticks", "100g egg noodles", "Fresh parsley"], "protein": "chicken"},
+    "Pea & mint soup": {"ingredients": ["500g frozen peas", "1 onion", "100ml cream", "Fresh mint"], "protein": None},
+    "French onion soup": {"ingredients": ["4 onions", "100ml white wine", "100g gruyere", "Baguette"], "protein": None},
+    "Minestrone": {"ingredients": ["1 onion", "2 carrots", "2 celery sticks", "1 tin chopped tomatoes", "1 tin cannellini beans", "100g pasta"], "protein": None},
+    "Broccoli & stilton soup": {"ingredients": ["1 large broccoli", "1 onion", "100g stilton", "100ml cream"], "protein": None},
+    "Sweetcorn chowder": {"ingredients": ["2 tins sweetcorn", "200g bacon", "1 onion", "2 potatoes", "200ml cream"], "protein": "pork"},
+    "Roasted red pepper soup": {"ingredients": ["4 red peppers", "1 onion", "2 garlic cloves"], "protein": None},
+    "Mushroom soup": {"ingredients": ["400g mushrooms", "1 onion", "2 garlic cloves", "100ml cream", "Fresh thyme"], "protein": None},
+    "Ham & cheese toastie": {"ingredients": ["Bread", "100g ham", "50g cheddar"], "protein": "pork"},
+    "BLT sandwich": {"ingredients": ["150g bacon", "Bread", "Lettuce", "2 tomatoes", "Mayonnaise"], "protein": "pork"},
+    "Tuna melt": {"ingredients": ["1 tin tuna", "Bread", "50g cheddar"], "protein": "fish"},
+    "Club sandwich": {"ingredients": ["Bread", "100g bacon", "200g cooked chicken", "Lettuce", "2 tomatoes"], "protein": "chicken"},
+    "Croque monsieur": {"ingredients": ["Bread", "200g ham", "100g gruyere", "150ml milk"], "protein": "pork"},
+    "Coronation chicken sandwich": {"ingredients": ["2 chicken breasts", "Bread", "Lettuce", "Mango chutney"], "protein": "chicken"},
+    "Egg mayo sandwich": {"ingredients": ["4 eggs", "Bread", "Mayonnaise"], "protein": None},
+    "Cheese & pickle sandwich": {"ingredients": ["Bread", "75g cheddar", "Branston pickle"], "protein": None},
+    "Welsh rarebit": {"ingredients": ["200g mature cheddar", "100ml beer or milk", "Bread"], "protein": None},
+    "Prawn mayo sandwich": {"ingredients": ["150g cooked prawns", "Bread", "Lettuce", "Mayonnaise"], "protein": "fish"},
+    "Smoked salmon bagel": {"ingredients": ["Bagels", "100g smoked salmon", "Cream cheese", "Capers"], "protein": "fish"},
+    "Chicken Caesar wrap": {"ingredients": ["1 chicken breast", "Wraps", "Romaine lettuce", "Parmesan", "Caesar dressing"], "protein": "chicken"},
+    "Ham salad wrap": {"ingredients": ["100g ham", "Wraps", "Lettuce", "Tomato", "Cucumber"], "protein": "pork"},
+    "Hummus & veg wrap": {"ingredients": ["Hummus", "Wraps", "Carrots", "Cucumber", "Red pepper"], "protein": None},
+    "Cheese toastie": {"ingredients": ["Bread", "75g cheddar"], "protein": None},
+    "Cheese omelette": {"ingredients": ["3 eggs", "50g cheese"], "protein": None},
+    "Jacket potato with beans": {"ingredients": ["2 large potatoes", "1 tin baked beans", "50g cheese"], "protein": None},
+    "Jacket potato with tuna mayo": {"ingredients": ["2 large potatoes", "1 tin tuna", "Sweetcorn"], "protein": "fish"},
+    "Jacket potato with cheese & coleslaw": {"ingredients": ["2 large potatoes", "75g cheddar", "Coleslaw"], "protein": None},
+    "Beans on toast": {"ingredients": ["1 tin baked beans", "Bread", "Cheese"], "protein": None},
+    "Cheese on toast": {"ingredients": ["Bread", "75g cheddar"], "protein": None},
+    "Sardines on toast": {"ingredients": ["1 tin sardines", "Bread", "Lemon"], "protein": "fish"},
+    "Egg fried rice": {"ingredients": ["300g rice", "2 eggs", "100g frozen peas", "2 spring onions", "Soy sauce"], "protein": None},
+    "Quesadilla": {"ingredients": ["Tortillas", "75g cheddar", "1 pepper", "Salsa", "Sour cream"], "protein": None},
+    "Avocado on toast": {"ingredients": ["2 avocados", "Sourdough bread", "Lemon", "Chilli flakes"], "protein": None},
+    "Greek salad": {"ingredients": ["1 cucumber", "4 tomatoes", "1 red onion", "100g feta", "Olives"], "protein": None},
+    "Caesar salad": {"ingredients": ["Romaine lettuce", "1 chicken breast", "Croutons", "Parmesan", "Caesar dressing"], "protein": "chicken"},
+    "Nicoise salad": {"ingredients": ["200g new potatoes", "100g green beans", "2 eggs", "1 tin tuna", "Olives"], "protein": "fish"},
+    "Ploughman's lunch": {"ingredients": ["75g cheddar", "100g ham", "Branston pickle", "Crusty bread", "1 apple", "Celery"], "protein": "pork"},
+    "Leftover roast sandwich": {"ingredients": ["Bread", "Stuffing", "Cranberry sauce"], "protein": None},
 }
 
 dinner_recipes = {
-    "Spaghetti Bolognese": {"ingredients": ["500g beef mince", "1 onion, diced", "2 garlic cloves", "2 carrots, diced", "2 tins chopped tomatoes", "2 tbsp tomato puree", "400g spaghetti", "Parmesan"]},
-    "Cottage Pie": {"ingredients": ["500g beef mince", "1 onion, diced", "2 carrots, diced", "400ml beef stock", "2 tbsp tomato puree", "800g potatoes", "50g butter", "Milk"]},
-    "Beef Stroganoff": {"ingredients": ["500g beef sirloin, sliced thin", "250g mushrooms, sliced", "1 onion, sliced", "200ml beef stock", "150ml sour cream", "1 tbsp paprika", "Rice"]},
-    "Chilli Con Carne": {"ingredients": ["500g beef mince", "1 onion, diced", "2 garlic cloves", "1 tin tomatoes", "1 tin kidney beans", "2 tsp cumin", "1 tsp chilli powder", "Rice"]},
-    "Beef Stew": {"ingredients": ["500g stewing beef, cubed", "2 onions, quartered", "4 carrots, chunked", "4 potatoes, chunked", "500ml beef stock", "2 tbsp flour", "Thyme"]},
-    "Beef Tacos": {"ingredients": ["500g beef mince", "1 onion, diced", "2 tbsp taco seasoning", "8 taco shells", "Lettuce, tomato, cheese", "Sour cream, salsa"]},
-    "Beef Burgers": {"ingredients": ["500g beef mince", "1 onion, grated", "1 egg", "4 burger buns", "Lettuce, tomato, onion", "Cheese, ketchup, mustard"]},
-    "Steak & Chips": {"ingredients": ["2 sirloin steaks", "500g potatoes, cut into chips", "Oil for frying", "Butter", "Peas"]},
-    "Beef Fajitas": {"ingredients": ["500g beef steak, sliced", "2 peppers, sliced", "1 onion, sliced", "2 tbsp fajita seasoning", "8 tortillas", "Sour cream, guacamole"]},
-    "Lasagne": {"ingredients": ["500g beef mince", "1 onion", "2 tins tomatoes", "Lasagne sheets", "50g butter", "50g flour", "500ml milk", "100g parmesan"]},
-    "Meatballs in Tomato Sauce": {"ingredients": ["500g beef mince", "1 onion, grated", "50g breadcrumbs", "1 egg", "2 tins tomatoes", "2 garlic cloves", "Fresh basil", "Spaghetti"]},
-    "Beef & Broccoli Stir-fry": {"ingredients": ["400g beef steak, sliced", "1 head broccoli, florets", "3 garlic cloves", "3 tbsp soy sauce", "1 tbsp honey", "Rice"]},
-    "Chicken Tikka Masala": {"ingredients": ["500g chicken breast, cubed", "2 tbsp tikka paste", "1 onion", "1 tin tomatoes", "200ml cream", "Coriander", "Rice"]},
-    "Chicken Fajitas": {"ingredients": ["500g chicken breast, sliced", "2 peppers, sliced", "1 onion, sliced", "2 tbsp fajita seasoning", "8 tortillas", "Sour cream, salsa"]},
-    "Chicken Korma": {"ingredients": ["500g chicken breast, cubed", "1 onion", "3 tbsp korma paste", "200ml coconut cream", "100g ground almonds", "Sultanas", "Rice"]},
-    "Chicken Katsu Curry": {"ingredients": ["4 chicken breasts", "100g flour", "2 eggs", "150g panko breadcrumbs", "1 onion", "2 tbsp curry powder", "400ml chicken stock", "Rice"]},
-    "Thai Green Curry": {"ingredients": ["500g chicken thigh, sliced", "2 tbsp green curry paste", "400ml coconut milk", "1 aubergine, cubed", "Green beans", "Thai basil", "Rice"]},
-    "Chicken Stir-fry": {"ingredients": ["500g chicken breast, sliced", "2 peppers, sliced", "1 onion, sliced", "2 pak choi", "3 tbsp soy sauce", "1 tbsp honey", "Noodles"]},
-    "Chicken Pie": {"ingredients": ["500g chicken breast, cubed", "3 leeks, sliced", "200ml chicken stock", "200ml cream", "1 tbsp Dijon mustard", "1 sheet puff pastry", "1 egg"]},
-    "Honey Mustard Chicken": {"ingredients": ["4 chicken breasts", "3 tbsp honey", "2 tbsp wholegrain mustard", "2 tbsp soy sauce", "New potatoes", "Green veg"]},
-    "Chicken Cacciatore": {"ingredients": ["8 chicken thighs", "1 onion, sliced", "2 peppers, sliced", "2 tins tomatoes", "100ml red wine", "Olives", "Fresh basil"]},
-    "Lemon Herb Chicken": {"ingredients": ["4 chicken breasts", "2 lemons, juiced", "4 garlic cloves", "Fresh rosemary, thyme", "Olive oil", "Roast potatoes", "Salad"]},
-    "Chicken Goujons": {"ingredients": ["4 chicken breasts, cut into strips", "100g flour", "2 eggs", "150g breadcrumbs", "Oil for frying", "Chips", "Peas"]},
-    "Chicken Noodle Stir-fry": {"ingredients": ["400g chicken, sliced", "300g egg noodles", "2 pak choi", "100g beansprouts", "3 tbsp soy sauce", "1 tbsp sesame oil"]},
-    "Sausage Casserole": {"ingredients": ["8 pork sausages", "1 onion, sliced", "2 peppers, sliced", "2 tins tomatoes", "1 tin cannellini beans", "2 tsp smoked paprika"]},
-    "Pork Chops with Apple": {"ingredients": ["4 pork chops", "2 apples, sliced", "1 onion, sliced", "200ml cider", "1 tbsp wholegrain mustard", "Mashed potato"]},
-    "Pulled Pork": {"ingredients": ["1.5kg pork shoulder", "2 tbsp smoked paprika", "1 tbsp brown sugar", "200ml BBQ sauce", "Burger buns", "Coleslaw"]},
-    "Pork Stir-fry": {"ingredients": ["400g pork tenderloin, sliced", "1 red pepper", "1 courgette", "100g mangetout", "3 tbsp hoisin sauce", "Rice or noodles"]},
-    "Gammon, Egg & Chips": {"ingredients": ["2 gammon steaks", "4 eggs", "500g potatoes, cut into chips", "Oil", "Peas"]},
-    "Toad in the Hole": {"ingredients": ["8 sausages", "140g flour", "4 eggs", "200ml milk", "Vegetable oil", "Onion gravy"]},
-    "Pork Meatballs": {"ingredients": ["500g pork mince", "1 onion, grated", "50g breadcrumbs", "1 egg", "2 tins tomatoes", "Fresh basil", "Spaghetti"]},
-    "Sweet & Sour Pork": {"ingredients": ["400g pork tenderloin, cubed", "1 pepper, chunked", "1 onion, chunked", "1 tin pineapple chunks", "3 tbsp tomato ketchup", "2 tbsp soy sauce", "1 tbsp vinegar", "Rice"]},
-    "Shepherd's Pie": {"ingredients": ["500g lamb mince", "1 onion, diced", "2 carrots, diced", "400ml lamb stock", "2 tbsp tomato puree", "800g potatoes", "50g butter"]},
-    "Lamb Koftas": {"ingredients": ["500g lamb mince", "1 onion, grated", "2 garlic cloves", "1 tsp cumin", "Fresh mint", "Pitta bread", "Tzatziki, salad"]},
-    "Lamb Chops with Mint": {"ingredients": ["8 lamb chops", "Fresh mint, chopped", "2 tbsp olive oil", "2 garlic cloves", "New potatoes", "Green beans"]},
-    "Lamb Curry": {"ingredients": ["500g lamb leg, cubed", "1 onion", "3 tbsp curry paste", "400ml coconut milk", "200g spinach", "Rice", "Naan bread"]},
-    "Moussaka": {"ingredients": ["500g lamb mince", "2 aubergines, sliced", "1 onion", "2 tins tomatoes", "1 tsp cinnamon", "50g butter", "50g flour", "500ml milk", "100g feta"]},
-    "Lamb Hotpot": {"ingredients": ["500g lamb neck, sliced", "2 onions, sliced", "3 carrots, sliced", "500ml lamb stock", "Fresh thyme", "800g potatoes, sliced"]},
-    "Fish & Chips": {"ingredients": ["4 cod fillets", "150g flour", "200ml sparkling water", "1 tsp baking powder", "1kg potatoes", "Oil", "Mushy peas", "Tartare sauce"]},
-    "Fish Pie": {"ingredients": ["400g mixed fish (salmon, cod, smoked haddock)", "200g prawns", "500ml milk", "50g butter", "50g flour", "800g potatoes", "Fresh parsley"]},
-    "Fish Tacos": {"ingredients": ["400g white fish", "2 tsp cumin", "1 tsp paprika", "8 tortillas", "Cabbage, shredded", "Lime", "Sour cream", "Coriander"]},
-    "Salmon Teriyaki": {"ingredients": ["4 salmon fillets", "4 tbsp soy sauce", "2 tbsp honey", "1 tbsp rice vinegar", "1 garlic clove", "Rice", "Broccoli"]},
-    "Prawn Stir-fry": {"ingredients": ["400g prawns", "2 peppers, sliced", "100g mangetout", "2 pak choi", "3 tbsp soy sauce", "1 tbsp sesame oil", "Noodles"]},
-    "Salmon Fishcakes": {"ingredients": ["400g salmon fillets", "400g potatoes, mashed", "2 spring onions, sliced", "1 tbsp capers", "Flour, egg, breadcrumbs", "Salad", "Tartare sauce"]},
-    "Prawn Curry": {"ingredients": ["400g prawns", "1 onion", "2 tbsp curry paste", "400ml coconut milk", "200g spinach", "Rice", "Naan"]},
-    "Cod with Parsley Sauce": {"ingredients": ["4 cod fillets", "50g butter", "50g flour", "500ml milk", "Large bunch parsley, chopped", "New potatoes", "Peas"]},
-    "Fish Finger Sandwiches": {"ingredients": ["12 fish fingers", "8 slices bread", "Tartare sauce", "Lettuce", "Lemon"]},
-    "Tuna Pasta Bake": {"ingredients": ["300g pasta", "2 tins tuna", "1 tin sweetcorn", "50g butter", "50g flour", "500ml milk", "150g cheddar"]},
-    "Smoked Haddock Risotto": {"ingredients": ["400g smoked haddock", "300g risotto rice", "1 onion", "150ml white wine", "1L fish stock", "100g peas", "50g parmesan"]},
-    "Baked Salmon with Lemon": {"ingredients": ["4 salmon fillets", "2 lemons", "Fresh dill", "Olive oil", "New potatoes", "Asparagus"]},
-    "Cauliflower Cheese": {"ingredients": ["1 large cauliflower", "50g butter", "50g flour", "500ml milk", "200g cheddar", "1 tsp mustard"]},
-    "Mushroom Risotto": {"ingredients": ["300g risotto rice", "300g mushrooms", "1 onion", "150ml white wine", "1L veg stock", "50g parmesan", "Fresh thyme"]},
-    "Vegetable Curry": {"ingredients": ["1 cauliflower, florets", "2 potatoes, cubed", "200g spinach", "1 onion", "3 tbsp curry paste", "400ml coconut milk", "Rice"]},
-    "Macaroni Cheese": {"ingredients": ["350g macaroni", "50g butter", "50g flour", "600ml milk", "250g cheddar", "1 tsp mustard"]},
-    "Vegetable Stir-fry": {"ingredients": ["1 broccoli, florets", "2 peppers, sliced", "2 pak choi", "100g beansprouts", "3 tbsp soy sauce", "1 tbsp sesame oil", "Noodles or rice"]},
-    "Vegetable Lasagne": {"ingredients": ["2 courgettes, sliced", "1 aubergine, sliced", "2 peppers, sliced", "2 tins tomatoes", "Lasagne sheets", "50g butter", "50g flour", "500ml milk", "100g parmesan"]},
-    "Cheese & Onion Pie": {"ingredients": ["500g potatoes, sliced", "2 onions, sliced", "200g cheddar, grated", "300ml cream", "1 sheet puff pastry", "1 egg"]},
-    "Spinach & Ricotta Cannelloni": {"ingredients": ["12 cannelloni tubes", "500g spinach, wilted", "250g ricotta", "100g parmesan", "2 tins tomatoes", "2 garlic cloves"]},
-    "Stuffed Peppers": {"ingredients": ["4 large peppers", "200g rice, cooked", "1 tin chickpeas", "100g feta", "Fresh herbs", "Olive oil"]},
-    "Vegetable Fajitas": {"ingredients": ["2 peppers, sliced", "1 courgette, sliced", "1 onion, sliced", "1 tin black beans", "2 tbsp fajita seasoning", "8 tortillas", "Sour cream, salsa"]},
+    "Spaghetti Bolognese": {"ingredients": ["500g beef mince", "1 onion", "2 carrots", "2 tins chopped tomatoes", "400g spaghetti", "Parmesan"], "protein": "beef"},
+    "Cottage Pie": {"ingredients": ["500g beef mince", "1 onion", "2 carrots", "800g potatoes"], "protein": "beef"},
+    "Beef Stroganoff": {"ingredients": ["500g beef sirloin", "250g mushrooms", "1 onion", "150ml sour cream", "Rice"], "protein": "beef"},
+    "Chilli Con Carne": {"ingredients": ["500g beef mince", "1 onion", "1 tin tomatoes", "1 tin kidney beans", "Rice"], "protein": "beef"},
+    "Beef Stew": {"ingredients": ["500g stewing beef", "2 onions", "4 carrots", "4 potatoes"], "protein": "beef"},
+    "Beef Tacos": {"ingredients": ["500g beef mince", "1 onion", "Taco shells", "Lettuce", "Tomatoes", "Cheese", "Sour cream"], "protein": "beef"},
+    "Beef Burgers": {"ingredients": ["500g beef mince", "1 onion", "Burger buns", "Lettuce", "Tomato", "Cheese"], "protein": "beef"},
+    "Steak & Chips": {"ingredients": ["2 sirloin steaks", "500g potatoes", "Peas"], "protein": "beef"},
+    "Beef Fajitas": {"ingredients": ["500g beef steak", "2 peppers", "1 onion", "Tortillas", "Sour cream"], "protein": "beef"},
+    "Lasagne": {"ingredients": ["500g beef mince", "1 onion", "2 tins tomatoes", "Lasagne sheets", "500ml milk", "100g parmesan"], "protein": "beef"},
+    "Meatballs in Tomato Sauce": {"ingredients": ["500g beef mince", "1 onion", "2 tins tomatoes", "Spaghetti"], "protein": "beef"},
+    "Beef & Broccoli Stir-fry": {"ingredients": ["400g beef steak", "1 head broccoli", "3 garlic cloves", "Soy sauce", "Rice"], "protein": "beef"},
+    "Chicken Tikka Masala": {"ingredients": ["500g chicken breast", "1 onion", "1 tin tomatoes", "200ml cream", "Rice"], "protein": "chicken"},
+    "Chicken Fajitas": {"ingredients": ["500g chicken breast", "2 peppers", "1 onion", "Tortillas", "Sour cream"], "protein": "chicken"},
+    "Chicken Korma": {"ingredients": ["500g chicken breast", "1 onion", "200ml coconut cream", "100g ground almonds", "Rice"], "protein": "chicken"},
+    "Chicken Katsu Curry": {"ingredients": ["4 chicken breasts", "Panko breadcrumbs", "1 onion", "Rice"], "protein": "chicken"},
+    "Thai Green Curry": {"ingredients": ["500g chicken thigh", "400ml coconut milk", "1 aubergine", "Green beans", "Rice"], "protein": "chicken"},
+    "Chicken Stir-fry": {"ingredients": ["500g chicken breast", "2 peppers", "1 onion", "2 pak choi", "Soy sauce", "Noodles"], "protein": "chicken"},
+    "Chicken Pie": {"ingredients": ["500g chicken breast", "3 leeks", "200ml cream", "Puff pastry"], "protein": "chicken"},
+    "Honey Mustard Chicken": {"ingredients": ["4 chicken breasts", "Honey", "Wholegrain mustard", "New potatoes"], "protein": "chicken"},
+    "Chicken Cacciatore": {"ingredients": ["8 chicken thighs", "1 onion", "2 peppers", "2 tins tomatoes", "Olives"], "protein": "chicken"},
+    "Lemon Herb Chicken": {"ingredients": ["4 chicken breasts", "2 lemons", "Fresh rosemary", "Fresh thyme", "Potatoes"], "protein": "chicken"},
+    "Chicken Goujons": {"ingredients": ["4 chicken breasts", "Breadcrumbs", "Chips", "Peas"], "protein": "chicken"},
+    "Chicken Noodle Stir-fry": {"ingredients": ["400g chicken", "300g egg noodles", "2 pak choi", "100g beansprouts", "Soy sauce"], "protein": "chicken"},
+    "Sausage Casserole": {"ingredients": ["8 pork sausages", "1 onion", "2 peppers", "2 tins tomatoes", "1 tin cannellini beans"], "protein": "pork"},
+    "Pork Chops with Apple": {"ingredients": ["4 pork chops", "2 apples", "1 onion", "200ml cider", "Mashed potato"], "protein": "pork"},
+    "Pulled Pork": {"ingredients": ["1.5kg pork shoulder", "BBQ sauce", "Burger buns", "Coleslaw"], "protein": "pork"},
+    "Pork Stir-fry": {"ingredients": ["400g pork tenderloin", "1 red pepper", "1 courgette", "100g mangetout", "Hoisin sauce", "Noodles"], "protein": "pork"},
+    "Gammon, Egg & Chips": {"ingredients": ["2 gammon steaks", "4 eggs", "500g potatoes", "Peas"], "protein": "pork"},
+    "Toad in the Hole": {"ingredients": ["8 sausages", "140g flour", "4 eggs", "200ml milk"], "protein": "pork"},
+    "Pork Meatballs": {"ingredients": ["500g pork mince", "1 onion", "2 tins tomatoes", "Spaghetti"], "protein": "pork"},
+    "Sweet & Sour Pork": {"ingredients": ["400g pork tenderloin", "1 pepper", "1 onion", "1 tin pineapple", "Rice"], "protein": "pork"},
+    "Shepherd's Pie": {"ingredients": ["500g lamb mince", "1 onion", "2 carrots", "800g potatoes"], "protein": "lamb"},
+    "Lamb Koftas": {"ingredients": ["500g lamb mince", "1 onion", "Fresh mint", "Pitta bread", "Tzatziki"], "protein": "lamb"},
+    "Lamb Chops with Mint": {"ingredients": ["8 lamb chops", "Fresh mint", "New potatoes", "Green beans"], "protein": "lamb"},
+    "Lamb Curry": {"ingredients": ["500g lamb leg", "1 onion", "400ml coconut milk", "200g spinach", "Rice", "Naan bread"], "protein": "lamb"},
+    "Moussaka": {"ingredients": ["500g lamb mince", "2 aubergines", "1 onion", "2 tins tomatoes", "500ml milk", "100g feta"], "protein": "lamb"},
+    "Lamb Hotpot": {"ingredients": ["500g lamb neck", "2 onions", "3 carrots", "800g potatoes"], "protein": "lamb"},
+    "Fish & Chips": {"ingredients": ["4 cod fillets", "150g flour", "1kg potatoes", "Mushy peas", "Tartare sauce"], "protein": "fish"},
+    "Fish Pie": {"ingredients": ["400g mixed fish", "200g prawns", "500ml milk", "800g potatoes"], "protein": "fish"},
+    "Fish Tacos": {"ingredients": ["400g white fish", "Tortillas", "Cabbage", "Lime", "Sour cream"], "protein": "fish"},
+    "Salmon Teriyaki": {"ingredients": ["4 salmon fillets", "Soy sauce", "Honey", "Rice", "Broccoli"], "protein": "fish"},
+    "Prawn Stir-fry": {"ingredients": ["400g prawns", "2 peppers", "100g mangetout", "2 pak choi", "Noodles"], "protein": "fish"},
+    "Salmon Fishcakes": {"ingredients": ["400g salmon fillets", "400g potatoes", "2 spring onions", "Breadcrumbs", "Salad"], "protein": "fish"},
+    "Prawn Curry": {"ingredients": ["400g prawns", "1 onion", "400ml coconut milk", "200g spinach", "Rice"], "protein": "fish"},
+    "Cod with Parsley Sauce": {"ingredients": ["4 cod fillets", "500ml milk", "Fresh parsley", "New potatoes", "Peas"], "protein": "fish"},
+    "Fish Finger Sandwiches": {"ingredients": ["12 fish fingers", "Bread", "Tartare sauce", "Lettuce"], "protein": "fish"},
+    "Tuna Pasta Bake": {"ingredients": ["300g pasta", "2 tins tuna", "1 tin sweetcorn", "500ml milk", "150g cheddar"], "protein": "fish"},
+    "Smoked Haddock Risotto": {"ingredients": ["400g smoked haddock", "300g risotto rice", "1 onion", "150ml white wine", "100g peas"], "protein": "fish"},
+    "Baked Salmon with Lemon": {"ingredients": ["4 salmon fillets", "2 lemons", "Fresh dill", "New potatoes", "Asparagus"], "protein": "fish"},
+    "Cauliflower Cheese": {"ingredients": ["1 large cauliflower", "500ml milk", "200g cheddar"], "protein": None},
+    "Mushroom Risotto": {"ingredients": ["300g risotto rice", "300g mushrooms", "1 onion", "150ml white wine", "50g parmesan"], "protein": None},
+    "Vegetable Curry": {"ingredients": ["1 cauliflower", "2 potatoes", "200g spinach", "1 onion", "400ml coconut milk", "Rice"], "protein": None},
+    "Macaroni Cheese": {"ingredients": ["350g macaroni", "600ml milk", "250g cheddar"], "protein": None},
+    "Vegetable Stir-fry": {"ingredients": ["1 broccoli", "2 peppers", "2 pak choi", "100g beansprouts", "Soy sauce", "Noodles"], "protein": None},
+    "Vegetable Lasagne": {"ingredients": ["2 courgettes", "1 aubergine", "2 peppers", "2 tins tomatoes", "Lasagne sheets", "500ml milk", "100g parmesan"], "protein": None},
+    "Cheese & Onion Pie": {"ingredients": ["500g potatoes", "2 onions", "200g cheddar", "300ml cream", "Puff pastry"], "protein": None},
+    "Spinach & Ricotta Cannelloni": {"ingredients": ["Cannelloni tubes", "500g spinach", "250g ricotta", "100g parmesan", "2 tins tomatoes"], "protein": None},
+    "Stuffed Peppers": {"ingredients": ["4 large peppers", "200g rice", "1 tin chickpeas", "100g feta"], "protein": None},
+    "Vegetable Fajitas": {"ingredients": ["2 peppers", "1 courgette", "1 onion", "1 tin black beans", "Tortillas", "Sour cream"], "protein": None},
 }
 
 breakfast_recipes = {
-    "Full English": {"ingredients": ["4 rashers bacon", "4 sausages", "4 eggs", "2 tomatoes, halved", "200g mushrooms", "1 tin baked beans", "Toast"]},
-    "Eggs Benedict": {"ingredients": ["4 eggs", "2 English muffins", "4 slices ham", "For hollandaise: 2 egg yolks, 100g butter, 1 tbsp lemon juice"]},
-    "Eggs Florentine": {"ingredients": ["4 eggs", "200g spinach", "2 English muffins", "Hollandaise sauce", "Butter"]},
-    "Eggs Royale": {"ingredients": ["4 eggs", "2 English muffins", "100g smoked salmon", "Hollandaise sauce"]},
-    "Pancakes": {"ingredients": ["200g self-raising flour", "1 egg", "300ml milk", "Butter", "Maple syrup, bacon or berries"]},
-    "American Pancakes": {"ingredients": ["200g self-raising flour", "1 tsp baking powder", "1 egg", "250ml milk", "2 tbsp melted butter", "Maple syrup, blueberries"]},
-    "French Toast": {"ingredients": ["4 thick slices bread (brioche is best)", "2 eggs", "100ml milk", "1 tsp cinnamon", "Vanilla", "Butter", "Berries, maple syrup"]},
-    "Shakshuka": {"ingredients": ["1 tin tomatoes", "1 red pepper, diced", "1 onion", "2 garlic cloves", "1 tsp cumin", "1 tsp paprika", "4 eggs", "Coriander", "Crusty bread"]},
-    "Avocado on Toast": {"ingredients": ["2 avocados", "4 slices sourdough", "4 eggs", "Chilli flakes", "Lemon", "Salt & pepper"]},
-    "Scrambled Eggs & Smoked Salmon": {"ingredients": ["6 eggs", "2 tbsp butter", "100g smoked salmon", "Fresh chives", "Toast"]},
-    "Omelette": {"ingredients": ["3 eggs", "Filling of choice (cheese, ham, mushrooms, herbs)", "1 tbsp butter"]},
-    "Bacon & Egg Muffin": {"ingredients": ["4 rashers bacon", "2 eggs", "2 English muffins", "2 slices cheese", "Brown sauce or ketchup"]},
-    "Kedgeree": {"ingredients": ["300g smoked haddock", "250g rice", "4 eggs, hard boiled", "1 onion", "2 tsp curry powder", "Fresh parsley"]},
-    "Porridge with Berries": {"ingredients": ["100g porridge oats", "400ml milk", "Honey", "Fresh berries", "Seeds (optional)"]},
-    "Croissants with Ham & Cheese": {"ingredients": ["2 croissants", "4 slices ham", "50g gruyere, sliced", "Dijon mustard"]},
+    "Full English": {"ingredients": ["200g bacon", "8 sausages", "4 eggs", "2 tomatoes", "200g mushrooms", "1 tin baked beans", "Bread"], "protein": "pork"},
+    "Eggs Benedict": {"ingredients": ["4 eggs", "English muffins", "200g ham"], "protein": "pork"},
+    "Eggs Florentine": {"ingredients": ["4 eggs", "200g spinach", "English muffins"], "protein": None},
+    "Eggs Royale": {"ingredients": ["4 eggs", "English muffins", "200g smoked salmon"], "protein": "fish"},
+    "Pancakes": {"ingredients": ["200g flour", "1 egg", "300ml milk", "Maple syrup"], "protein": None},
+    "American Pancakes": {"ingredients": ["200g flour", "1 egg", "250ml milk", "Maple syrup", "Blueberries"], "protein": None},
+    "French Toast": {"ingredients": ["Thick bread", "2 eggs", "100ml milk", "Berries", "Maple syrup"], "protein": None},
+    "Shakshuka": {"ingredients": ["1 tin tomatoes", "1 red pepper", "1 onion", "4 eggs", "Crusty bread"], "protein": None},
+    "Avocado on Toast": {"ingredients": ["2 avocados", "Sourdough bread", "4 eggs"], "protein": None},
+    "Scrambled Eggs & Smoked Salmon": {"ingredients": ["6 eggs", "100g smoked salmon", "Fresh chives", "Toast"], "protein": "fish"},
+    "Omelette": {"ingredients": ["3 eggs", "Cheese", "Ham or mushrooms"], "protein": None},
+    "Bacon & Egg Muffin": {"ingredients": ["200g bacon", "2 eggs", "English muffins", "Cheese"], "protein": "pork"},
+    "Kedgeree": {"ingredients": ["300g smoked haddock", "250g rice", "4 eggs", "1 onion", "Fresh parsley"], "protein": "fish"},
+    "Porridge with Berries": {"ingredients": ["100g porridge oats", "400ml milk", "Berries", "Honey"], "protein": None},
+    "Croissants with Ham & Cheese": {"ingredients": ["Croissants", "200g ham", "50g gruyere"], "protein": "pork"},
 }
 
 roast_recipes = {
-    "Roast Beef": {"ingredients": ["1.5kg beef joint", "Olive oil", "Salt & pepper", "Fresh rosemary"]},
-    "Roast Chicken": {"ingredients": ["1.8kg whole chicken", "1 lemon, halved", "1 garlic bulb", "Fresh thyme", "50g butter"]},
-    "Roast Pork": {"ingredients": ["2kg pork shoulder, skin scored", "Olive oil", "Sea salt", "Fresh sage"]},
-    "Roast Lamb": {"ingredients": ["2kg leg of lamb", "6 garlic cloves", "Fresh rosemary", "Olive oil"]},
-    "Roast Potatoes": {"ingredients": ["1.5kg potatoes, quartered", "4 tbsp goose fat or oil", "Salt", "Fresh rosemary"]},
-    "Yorkshire Puddings": {"ingredients": ["140g flour", "4 eggs", "200ml milk", "Oil"]},
-    "Onion Gravy": {"ingredients": ["2 onions, sliced", "2 tbsp butter", "1 tbsp flour", "500ml stock", "Meat juices"]},
+    "Roast Beef": {"ingredients": ["1.5kg beef joint"], "protein": "beef"},
+    "Roast Chicken": {"ingredients": ["1.8kg whole chicken", "1 lemon", "1 garlic bulb", "Fresh thyme"], "protein": "chicken"},
+    "Roast Pork": {"ingredients": ["2kg pork shoulder"], "protein": "pork"},
+    "Roast Lamb": {"ingredients": ["2kg leg of lamb", "Fresh rosemary"], "protein": "lamb"},
+}
+
+# Roast sides (for 7 people - doubled quantities)
+roast_sides = {
+    "potatoes": "3kg potatoes",
+    "yorkshires": "Yorkshire pudding mix",
+    "gravy": "Gravy granules",
+    "vegetables": "Selection of veg for 7",
 }
 
 # ============================================================
-# INGREDIENT CATEGORIZATION
+# PROTEIN CONSOLIDATION - what meat/fish to buy for 4 weeks
 # ============================================================
 
-def categorize_ingredient(ingredient):
-    """Categorize an ingredient into shopping list sections"""
-    ing_lower = ingredient.lower()
+def get_protein_requirements(week_nums):
+    """Get all protein requirements for a set of weeks"""
+    proteins = {
+        "beef": [],
+        "chicken": [],
+        "pork": [],
+        "lamb": [],
+        "fish": [],
+    }
 
-    # Meat
-    if any(x in ing_lower for x in ["beef", "mince", "steak", "sirloin", "stewing"]):
-        return "meat_beef"
-    if any(x in ing_lower for x in ["chicken", "thigh"]):
-        return "meat_chicken"
-    if any(x in ing_lower for x in ["pork", "gammon", "sausage", "bacon", "ham"]):
-        return "meat_pork"
-    if any(x in ing_lower for x in ["lamb"]):
-        return "meat_lamb"
+    for week_num in week_nums:
+        data = weeks_data.get(week_num, {})
+
+        # Check breakfast
+        breakfast = data.get("breakfast", "")
+        if breakfast in breakfast_recipes:
+            p = breakfast_recipes[breakfast].get("protein")
+            if p == "fish":
+                proteins["fish"].append(f"{breakfast} breakfast")
+            elif p:
+                proteins[p].append(f"{breakfast} breakfast")
+
+        # Check lunches
+        for day, meal in data.get("lunches", []):
+            if meal in lunch_recipes:
+                p = lunch_recipes[meal].get("protein")
+                if p == "fish":
+                    proteins["fish"].append(f"{meal}")
+                elif p:
+                    proteins[p].append(f"{meal}")
+
+        # Check dinners
+        for day, meal in data.get("dinners", []):
+            if meal == "Sunday Roast":
+                roast = data.get("roast")
+                if roast == "Roast Beef":
+                    proteins["beef"].append("Roast Beef joint (1.5kg)")
+                elif roast == "Roast Chicken":
+                    proteins["chicken"].append("Whole chicken (1.8kg)")
+                elif roast == "Roast Pork":
+                    proteins["pork"].append("Pork shoulder (2kg)")
+                elif roast == "Roast Lamb":
+                    proteins["lamb"].append("Leg of lamb (2kg)")
+            elif meal in dinner_recipes:
+                p = dinner_recipes[meal].get("protein")
+                if p == "fish":
+                    proteins["fish"].append(f"{meal}")
+                elif p:
+                    proteins[p].append(f"{meal}")
+
+    return proteins
+
+def consolidate_meat_list(proteins):
+    """Convert meal list to actual shopping quantities"""
+    shopping = {
+        "beef": [],
+        "chicken": [],
+        "pork": [],
+        "lamb": [],
+        "fish": [],
+    }
+
+    # Count occurrences of mince vs steak etc
+    beef_mince_count = sum(1 for m in proteins["beef"] if any(x in m for x in ["Bolognese", "Cottage", "Chilli", "Taco", "Burger", "Lasagne", "Meatball"]))
+    beef_steak_count = sum(1 for m in proteins["beef"] if any(x in m for x in ["Stroganoff", "Steak", "Fajita", "Stir-fry"]))
+    beef_stew_count = sum(1 for m in proteins["beef"] if "Stew" in m)
+    beef_roast_count = sum(1 for m in proteins["beef"] if "joint" in m)
+
+    if beef_mince_count > 0:
+        shopping["beef"].append(f"Beef mince ({beef_mince_count * 500}g)")
+    if beef_steak_count > 0:
+        shopping["beef"].append(f"Beef steak/sirloin ({beef_steak_count * 500}g)")
+    if beef_stew_count > 0:
+        shopping["beef"].append(f"Stewing beef ({beef_stew_count * 500}g)")
+    if beef_roast_count > 0:
+        shopping["beef"].append("Beef roasting joint (1.5kg)")
+
+    # Chicken
+    chicken_breast_count = sum(1 for m in proteins["chicken"] if any(x in m for x in ["Tikka", "Fajita", "Korma", "Katsu", "Stir-fry", "Pie", "Honey", "Lemon", "Goujons", "Caesar", "Coronation"]))
+    chicken_thigh_count = sum(1 for m in proteins["chicken"] if any(x in m for x in ["Thai", "Cacciatore", "Noodle"]))
+    chicken_whole_count = sum(1 for m in proteins["chicken"] if "Whole" in m or "1.8kg" in m)
+
+    if chicken_breast_count > 0:
+        shopping["chicken"].append(f"Chicken breasts ({chicken_breast_count * 2})")
+    if chicken_thigh_count > 0:
+        shopping["chicken"].append(f"Chicken thighs ({chicken_thigh_count * 500}g)")
+    if chicken_whole_count > 0:
+        shopping["chicken"].append("Whole chicken (1.8kg)")
+
+    # Pork
+    sausage_count = sum(1 for m in proteins["pork"] if any(x in m for x in ["Sausage", "Toad", "Full English"]))
+    bacon_count = sum(1 for m in proteins["pork"] if any(x in m for x in ["Bacon", "BLT", "Chowder", "Full English"]))
+    ham_count = sum(1 for m in proteins["pork"] if any(x in m for x in ["Ham", "Benedict", "Croque", "Ploughman", "Croissant"]))
+    pork_chop_count = sum(1 for m in proteins["pork"] if "Chop" in m)
+    pork_mince_count = sum(1 for m in proteins["pork"] if "Meatball" in m)
+    pork_tender_count = sum(1 for m in proteins["pork"] if any(x in m for x in ["Stir-fry", "Sweet"]))
+    gammon_count = sum(1 for m in proteins["pork"] if "Gammon" in m)
+    pork_shoulder = sum(1 for m in proteins["pork"] if any(x in m for x in ["Pulled", "shoulder", "2kg"]))
+
+    if sausage_count > 0:
+        shopping["pork"].append(f"Pork sausages ({sausage_count * 8})")
+    if bacon_count > 0:
+        shopping["pork"].append(f"Bacon ({bacon_count * 200}g)")
+    if ham_count > 0:
+        shopping["pork"].append(f"Ham slices ({ham_count * 200}g)")
+    if pork_chop_count > 0:
+        shopping["pork"].append(f"Pork chops ({pork_chop_count * 4})")
+    if pork_mince_count > 0:
+        shopping["pork"].append(f"Pork mince ({pork_mince_count * 500}g)")
+    if pork_tender_count > 0:
+        shopping["pork"].append(f"Pork tenderloin ({pork_tender_count * 400}g)")
+    if gammon_count > 0:
+        shopping["pork"].append(f"Gammon steaks ({gammon_count * 2})")
+    if pork_shoulder > 0:
+        shopping["pork"].append("Pork shoulder (2kg)")
+
+    # Lamb
+    lamb_mince_count = sum(1 for m in proteins["lamb"] if any(x in m for x in ["Shepherd", "Kofta", "Moussaka"]))
+    lamb_chop_count = sum(1 for m in proteins["lamb"] if "Chop" in m)
+    lamb_leg_count = sum(1 for m in proteins["lamb"] if any(x in m for x in ["Curry", "leg", "2kg"]))
+    lamb_neck_count = sum(1 for m in proteins["lamb"] if "Hotpot" in m)
+
+    if lamb_mince_count > 0:
+        shopping["lamb"].append(f"Lamb mince ({lamb_mince_count * 500}g)")
+    if lamb_chop_count > 0:
+        shopping["lamb"].append(f"Lamb chops ({lamb_chop_count * 8})")
+    if lamb_leg_count > 0:
+        shopping["lamb"].append("Leg of lamb (2kg)")
+    if lamb_neck_count > 0:
+        shopping["lamb"].append(f"Lamb neck ({lamb_neck_count * 500}g)")
 
     # Fish
-    if any(x in ing_lower for x in ["salmon", "cod", "haddock", "fish", "prawn", "mackerel", "tuna", "sardine"]):
-        return "fish"
+    cod_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Chips", "Parsley"]))
+    salmon_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Teriyaki", "Fishcake", "Baked Salmon"]))
+    smoked_salmon_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Smoked", "Royale", "Scrambled"]))
+    prawn_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Prawn", "Pie"]))
+    white_fish_count = sum(1 for m in proteins["fish"] if "Taco" in m)
+    mixed_fish_count = sum(1 for m in proteins["fish"] if "Pie" in m)
+    haddock_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Haddock", "Kedgeree"]))
+    tuna_count = sum(1 for m in proteins["fish"] if any(x in m for x in ["Tuna", "Nicoise"]))
+    fish_fingers_count = sum(1 for m in proteins["fish"] if "Finger" in m)
+    sardines_count = sum(1 for m in proteins["fish"] if "Sardine" in m)
 
-    # Dairy
-    if any(x in ing_lower for x in ["milk", "cream", "butter", "cheese", "cheddar", "parmesan", "feta", "gruyere", "stilton", "ricotta", "yogurt", "sour cream"]):
-        return "dairy"
+    if cod_count > 0:
+        shopping["fish"].append(f"Cod fillets ({cod_count * 4})")
+    if salmon_count > 0:
+        shopping["fish"].append(f"Salmon fillets ({salmon_count * 4})")
+    if smoked_salmon_count > 0:
+        shopping["fish"].append(f"Smoked salmon ({smoked_salmon_count * 100}g)")
+    if prawn_count > 0:
+        shopping["fish"].append(f"Prawns ({prawn_count * 300}g)")
+    if white_fish_count > 0:
+        shopping["fish"].append(f"White fish fillets ({white_fish_count * 400}g)")
+    if haddock_count > 0:
+        shopping["fish"].append(f"Smoked haddock ({haddock_count * 400}g)")
+    if tuna_count > 0:
+        shopping["fish"].append(f"Tinned tuna ({tuna_count * 2} tins)")
+    if fish_fingers_count > 0:
+        shopping["fish"].append("Fish fingers (2 packs)")
+    if sardines_count > 0:
+        shopping["fish"].append(f"Tinned sardines ({sardines_count} tins)")
 
-    # Eggs
-    if "egg" in ing_lower:
-        return "eggs"
-
-    # Bread/Bakery
-    if any(x in ing_lower for x in ["bread", "baguette", "roll", "bun", "wrap", "tortilla", "pitta", "naan", "croissant", "muffin", "bagel", "crouton"]):
-        return "bread"
-
-    # Pasta/Rice/Carbs
-    if any(x in ing_lower for x in ["pasta", "spaghetti", "macaroni", "lasagne", "noodle", "rice", "cannelloni"]):
-        return "carbs"
-
-    # Fresh Produce - Vegetables
-    if any(x in ing_lower for x in ["onion", "garlic", "carrot", "potato", "leek", "celery", "pepper", "tomato", "lettuce", "cucumber", "courgette", "aubergine", "broccoli", "cauliflower", "spinach", "mushroom", "bean", "pea", "asparagus", "pak choi", "cabbage", "squash", "avocado", "spring onion", "beansprout", "mangetout"]):
-        return "produce_veg"
-
-    # Fresh Produce - Fruit
-    if any(x in ing_lower for x in ["lemon", "lime", "apple", "berries", "pineapple", "banana"]):
-        return "produce_fruit"
-
-    # Fresh Herbs
-    if any(x in ing_lower for x in ["basil", "coriander", "parsley", "mint", "thyme", "rosemary", "sage", "dill", "chives"]):
-        return "herbs"
-
-    # Tinned/Jarred
-    if any(x in ing_lower for x in ["tin", "tinned", "baked beans", "kidney beans", "cannellini", "chickpea", "chopped tomatoes", "sweetcorn"]):
-        return "tins"
-
-    # Sauces/Condiments
-    if any(x in ing_lower for x in ["sauce", "paste", "ketchup", "mustard", "mayo", "pickle", "chutney", "salsa", "vinegar", "oil", "soy sauce", "hoisin", "honey"]):
-        return "condiments"
-
-    # Stock/Cooking
-    if any(x in ing_lower for x in ["stock", "wine", "cider", "beer"]):
-        return "cooking"
-
-    # Spices
-    if any(x in ing_lower for x in ["cumin", "paprika", "cinnamon", "curry", "chilli", "seasoning", "oregano", "pepper", "salt"]):
-        return "spices"
-
-    # Baking
-    if any(x in ing_lower for x in ["flour", "sugar", "breadcrumb", "baking powder", "panko"]):
-        return "baking"
-
-    # Frozen
-    if "frozen" in ing_lower:
-        return "frozen"
-
-    # Nuts/Dried
-    if any(x in ing_lower for x in ["almond", "sultana", "olive", "caper", "raisin"]):
-        return "dried"
-
-    return "other"
+    return shopping
 
 # ============================================================
-# BUILD MEAL SCHEDULE (same as generate_pages.py)
+# BUILD MEAL SCHEDULE
 # ============================================================
 
 days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
@@ -247,9 +341,9 @@ all_dinners = list(dinner_recipes.keys())
 all_breakfasts = list(breakfast_recipes.keys())
 roast_names = ["Roast Beef", "Roast Chicken", "Roast Pork", "Roast Lamb"]
 
-meat_dinners = [d for d in all_dinners if any(m in d for m in ["Beef", "Chicken", "Pork", "Lamb", "Sausage", "Burger", "Steak", "Meatball", "Gammon", "Toad", "Lasagne", "Bolognese", "Cottage", "Shepherd", "Chilli", "Fajita", "Taco", "Stew", "Stroganoff", "Korma", "Tikka", "Thai", "Curry", "Katsu", "Cacciatore", "Hotpot", "Moussaka", "Goujons", "Honey", "Lemon", "Pulled", "Sweet"])]
-fish_dinners = [d for d in all_dinners if any(f in d for f in ["Fish", "Salmon", "Cod", "Prawn", "Tuna", "Haddock"])]
-veg_dinners = [d for d in all_dinners if d in ["Cauliflower Cheese", "Mushroom Risotto", "Vegetable Curry", "Macaroni Cheese", "Vegetable Stir-fry", "Vegetable Lasagne", "Cheese & Onion Pie", "Spinach & Ricotta Cannelloni", "Stuffed Peppers", "Vegetable Fajitas"]]
+meat_dinners = [d for d in all_dinners if dinner_recipes[d].get("protein") in ["beef", "chicken", "pork", "lamb"]]
+fish_dinners = [d for d in all_dinners if dinner_recipes[d].get("protein") == "fish"]
+veg_dinners = [d for d in all_dinners if dinner_recipes[d].get("protein") is None]
 
 weeks_data = {}
 lunch_idx = 0
@@ -307,119 +401,69 @@ for week_num in range(1, 53):
     breakfast_idx += 1
 
 # ============================================================
-# COLLECT INGREDIENTS FOR EACH WEEK
-# ============================================================
-
-def get_week_ingredients(week_num):
-    """Collect all ingredients needed for a week's meals"""
-    data = weeks_data[week_num]
-    all_ingredients = []
-
-    # Breakfast
-    if data["breakfast"] in breakfast_recipes:
-        all_ingredients.extend(breakfast_recipes[data["breakfast"]]["ingredients"])
-
-    # Lunches
-    for day, meal in data["lunches"]:
-        if meal in lunch_recipes:
-            all_ingredients.extend(lunch_recipes[meal]["ingredients"])
-
-    # Dinners
-    for day, meal in data["dinners"]:
-        if meal == "Sunday Roast":
-            if data["roast"]:
-                all_ingredients.extend(roast_recipes[data["roast"]]["ingredients"])
-                all_ingredients.extend(roast_recipes["Roast Potatoes"]["ingredients"])
-                all_ingredients.extend(roast_recipes["Yorkshire Puddings"]["ingredients"])
-                all_ingredients.extend(roast_recipes["Onion Gravy"]["ingredients"])
-        elif meal in dinner_recipes:
-            all_ingredients.extend(dinner_recipes[meal]["ingredients"])
-
-    return all_ingredients
-
-def organize_shopping_list(ingredients):
-    """Organize ingredients into shopping categories"""
-    categories = {
-        "meat_beef": [], "meat_chicken": [], "meat_pork": [], "meat_lamb": [],
-        "fish": [], "dairy": [], "eggs": [], "bread": [], "carbs": [],
-        "produce_veg": [], "produce_fruit": [], "herbs": [],
-        "tins": [], "condiments": [], "cooking": [], "spices": [],
-        "baking": [], "frozen": [], "dried": [], "other": []
-    }
-
-    # Count occurrences and consolidate
-    ingredient_counts = {}
-    for ing in ingredients:
-        # Clean up ingredient string
-        clean_ing = ing.strip()
-        cat = categorize_ingredient(clean_ing)
-
-        if clean_ing not in ingredient_counts:
-            ingredient_counts[clean_ing] = {"count": 0, "category": cat}
-        ingredient_counts[clean_ing]["count"] += 1
-
-    # Add to categories
-    for ing, info in ingredient_counts.items():
-        categories[info["category"]].append((ing, info["count"]))
-
-    return categories
-
-# ============================================================
-# WEEKLY STAPLES
+# WEEKLY AND MONTHLY STAPLES
 # ============================================================
 
 weekly_staples = {
     "dairy": [
-        ("Whole milk", "2x 2L", "£2.40"),
-        ("Oat milk", "1L", "£1.80"),
+        ("Whole milk", "4 pints", "£1.50"),
         ("Butter", "250g", "£2.00"),
+        ("Cheddar cheese", "400g", "£3.50"),
+        ("Eggs (farmshop)", "24", "£6.00"),
     ],
     "bread": [
         ("White sliced loaf", "1", "£1.20"),
-        ("Crusty bread", "1", "£1.50"),
+        ("Crusty bread/rolls", "1", "£1.50"),
         ("Wraps/tortillas", "8 pack", "£1.50"),
-        ("Porridge oats", "1kg", "£1.20"),
     ],
-    "produce_staples": [
-        ("Onions", "1kg bag", "£1.00"),
+    "produce": [
+        ("Onions", "1kg", "£1.00"),
         ("Garlic", "2 bulbs", "£0.80"),
-        ("Potatoes", "2.5kg", "£2.00"),
-        ("Bananas", "6", "£0.80"),
+        ("Potatoes", "2.5kg", "£2.50"),
+        ("Carrots", "1kg", "£0.80"),
+        ("Bananas", "bunch", "£0.90"),
+        ("Seasonal fruit", "varies", "£3.00"),
+        ("Seasonal veg", "varies", "£5.00"),
     ],
     "drinks": [
         ("Fizzy drinks", "2x 2L", "£2.00"),
         ("Squash", "1L", "£1.50"),
     ],
     "snacks": [
-        ("Crisps multipack", "6", "£2.00"),
-        ("Biscuits", "1 pack", "£1.00"),
+        ("Crisps", "6 pack", "£2.00"),
+        ("Biscuits", "1 pack", "£1.20"),
     ],
 }
 
 monthly_staples = {
-    "household": [
-        ("Toilet roll", "9 pack", "£4.50"),
-        ("Washing up liquid", "1", "£1.20"),
-        ("Kitchen roll", "2 pack", "£2.00"),
-        ("Bin bags", "20", "£1.50"),
-    ],
-    "toiletries": [
-        ("Toothpaste", "2 tubes", "£3.00"),
-        ("Deodorant", "2", "£3.00"),
-        ("Shampoo", "1", "£2.00"),
-        ("Shower gel", "2", "£2.00"),
-    ],
     "pantry": [
-        ("Tinned tomatoes", "4 tins", "£3.20"),
+        ("Tinned tomatoes", "8 tins", "£6.40"),
         ("Baked beans", "4 tins", "£2.40"),
-        ("Pasta (various)", "1kg", "£1.50"),
-        ("Rice", "1kg", "£2.00"),
-        ("Stock cubes", "12", "£1.50"),
+        ("Kidney beans", "2 tins", "£1.60"),
+        ("Coconut milk", "4 tins", "£4.00"),
+        ("Pasta (various)", "2kg", "£3.00"),
+        ("Rice", "2kg", "£4.00"),
+        ("Noodles", "4 packs", "£4.00"),
+        ("Stock cubes", "24", "£2.00"),
+        ("Gravy granules", "2", "£3.00"),
     ],
     "frozen": [
-        ("Frozen peas", "1kg", "£1.50"),
-        ("Oven chips", "1.5kg", "£2.00"),
-        ("Fish fingers", "10 pack", "£2.00"),
+        ("Frozen peas", "2kg", "£3.00"),
+        ("Oven chips", "1.5kg", "£2.50"),
+        ("Fish fingers", "2 packs", "£4.00"),
+    ],
+    "household": [
+        ("Toilet roll", "9 pack", "£5.00"),
+        ("Kitchen roll", "4 pack", "£3.00"),
+        ("Washing up liquid", "1", "£1.50"),
+        ("Bin bags", "1 roll", "£2.00"),
+        ("Cleaning products", "as needed", "£5.00"),
+    ],
+    "toiletries": [
+        ("Toothpaste", "2", "£3.00"),
+        ("Shampoo/conditioner", "as needed", "£5.00"),
+        ("Shower gel/soap", "as needed", "£3.00"),
+        ("Deodorant", "2", "£4.00"),
     ],
 }
 
@@ -427,263 +471,147 @@ monthly_staples = {
 # HTML GENERATION
 # ============================================================
 
-def estimate_price(ingredient, count=1):
-    """Estimate price for an ingredient"""
-    ing_lower = ingredient.lower()
-
-    # Meats (most expensive)
-    if any(x in ing_lower for x in ["beef", "steak", "sirloin"]):
-        return count * 4.00
-    if any(x in ing_lower for x in ["chicken breast"]):
-        return count * 2.50
-    if any(x in ing_lower for x in ["chicken thigh", "thigh"]):
-        return count * 2.00
-    if any(x in ing_lower for x in ["pork", "gammon"]):
-        return count * 3.00
-    if any(x in ing_lower for x in ["lamb"]):
-        return count * 4.50
-    if any(x in ing_lower for x in ["sausage"]):
-        return count * 1.50
-    if any(x in ing_lower for x in ["bacon", "ham"]):
-        return count * 1.80
-    if any(x in ing_lower for x in ["mince"]):
-        return count * 3.00
-
-    # Fish
-    if any(x in ing_lower for x in ["salmon"]):
-        return count * 3.50
-    if any(x in ing_lower for x in ["cod", "haddock"]):
-        return count * 3.00
-    if any(x in ing_lower for x in ["prawn"]):
-        return count * 3.00
-    if any(x in ing_lower for x in ["smoked salmon"]):
-        return count * 2.50
-
-    # Dairy
-    if any(x in ing_lower for x in ["cream", "sour cream"]):
-        return count * 1.20
-    if any(x in ing_lower for x in ["cheese", "cheddar", "parmesan"]):
-        return count * 1.50
-    if any(x in ing_lower for x in ["butter"]):
-        return count * 0.80
-    if any(x in ing_lower for x in ["milk"]):
-        return count * 0.60
-    if any(x in ing_lower for x in ["egg"]):
-        return count * 0.50
-
-    # Produce
-    if any(x in ing_lower for x in ["onion", "carrot", "potato", "garlic"]):
-        return count * 0.40
-    if any(x in ing_lower for x in ["pepper", "tomato", "mushroom"]):
-        return count * 0.80
-    if any(x in ing_lower for x in ["broccoli", "cauliflower", "spinach"]):
-        return count * 1.00
-    if any(x in ing_lower for x in ["avocado"]):
-        return count * 1.20
-    if any(x in ing_lower for x in ["lemon", "lime"]):
-        return count * 0.40
-
-    # Herbs
-    if any(x in ing_lower for x in ["basil", "coriander", "parsley", "mint", "thyme", "rosemary"]):
-        return count * 0.80
-
-    # Carbs
-    if any(x in ing_lower for x in ["pasta", "spaghetti", "macaroni", "noodle"]):
-        return count * 0.60
-    if any(x in ing_lower for x in ["rice"]):
-        return count * 0.50
-    if any(x in ing_lower for x in ["bread", "wrap", "tortilla"]):
-        return count * 0.80
-
-    # Tins
-    if "tin" in ing_lower:
-        return count * 0.80
-
-    # Default
-    return count * 0.50
-
-def generate_shopping_html(week_num):
-    """Generate shopping list HTML for a specific week"""
+def generate_big_shop_html(week_num):
+    """Generate BIG SHOP list - all meat/fish for 4 weeks + monthly items"""
     data = weeks_data[week_num]
-    is_big_shop = (week_num - 1) % 4 == 0
 
-    # Get ingredients for this week
-    ingredients = get_week_ingredients(week_num)
-    organized = organize_shopping_list(ingredients)
+    # Determine which 4 weeks this big shop covers
+    month_weeks = [week_num, week_num + 1, week_num + 2, week_num + 3]
+    month_weeks = [w for w in month_weeks if w <= 52]
+
+    # Get all proteins needed for these 4 weeks
+    proteins = get_protein_requirements(month_weeks)
+    shopping = consolidate_meat_list(proteins)
 
     dates = data["dates"]
     month = data["month"]
-    shop_type = "BIG SHOP (Monthly Bulk Buy)" if is_big_shop else "Top-up Shop"
 
     categories_html = ""
-    total_estimate = 0
+    total = 0
 
-    # Generate meat section
-    all_meat = []
-    for cat in ["meat_beef", "meat_chicken", "meat_pork", "meat_lamb"]:
-        all_meat.extend(organized.get(cat, []))
-
+    # MEAT SECTION
+    all_meat = shopping["beef"] + shopping["chicken"] + shopping["pork"] + shopping["lamb"]
     if all_meat:
         rows = ""
-        for item, count in all_meat:
-            price = estimate_price(item, count)
-            total_estimate += price
-            qty = f"x{count}" if count > 1 else ""
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
+        for item in all_meat:
+            # Estimate prices
+            if "mince" in item.lower():
+                price = 4.50 * (int(re.search(r'\d+', item).group()) // 500) if re.search(r'\d+', item) else 4.50
+            elif "steak" in item.lower() or "sirloin" in item.lower():
+                price = 6.00 * (int(re.search(r'\d+', item).group()) // 500) if re.search(r'\d+', item) else 6.00
+            elif "joint" in item.lower() or "shoulder" in item.lower() or "leg" in item.lower():
+                price = 15.00
+            elif "chicken" in item.lower() and "whole" in item.lower():
+                price = 6.00
+            elif "breast" in item.lower():
+                price = 2.50 * (int(re.search(r'\d+', item).group()) if re.search(r'\d+', item) else 4)
+            elif "thigh" in item.lower():
+                price = 3.50 * (int(re.search(r'\d+', item).group()) // 500) if re.search(r'\d+', item) else 3.50
+            elif "sausage" in item.lower():
+                price = 3.00 * (int(re.search(r'\d+', item).group()) // 8) if re.search(r'\d+', item) else 3.00
+            elif "bacon" in item.lower():
+                price = 3.50 * (int(re.search(r'\d+', item).group()) // 200) if re.search(r'\d+', item) else 3.50
+            elif "ham" in item.lower():
+                price = 2.50 * (int(re.search(r'\d+', item).group()) // 200) if re.search(r'\d+', item) else 2.50
+            elif "chop" in item.lower():
+                price = 5.00 * (int(re.search(r'\d+', item).group()) // 4) if re.search(r'\d+', item) else 5.00
+            elif "gammon" in item.lower():
+                price = 4.00
+            else:
+                price = 5.00
+            total += price
+            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="price">~£{price:.0f}</td></tr>\n'
         categories_html += f'''
     <div class="category">
-        <h3>🥩 MEAT</h3>
+        <h3>🥩 MEAT (Month Supply - Freeze)</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate fish section
-    fish = organized.get("fish", [])
-    if fish:
+    # FISH SECTION
+    if shopping["fish"]:
         rows = ""
-        for item, count in fish:
-            price = estimate_price(item, count)
-            total_estimate += price
-            qty = f"x{count}" if count > 1 else ""
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
+        for item in shopping["fish"]:
+            if "salmon" in item.lower():
+                price = 8.00
+            elif "cod" in item.lower():
+                price = 7.00
+            elif "prawn" in item.lower():
+                price = 5.00
+            elif "haddock" in item.lower():
+                price = 6.00
+            elif "tuna" in item.lower():
+                price = 2.50
+            elif "finger" in item.lower():
+                price = 4.00
+            else:
+                price = 5.00
+            total += price
+            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="price">~£{price:.0f}</td></tr>\n'
         categories_html += f'''
     <div class="category">
-        <h3>🐟 FISH</h3>
+        <h3>🐟 FISH (Month Supply - Freeze)</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate dairy section (including weekly staples)
-    dairy = organized.get("dairy", [])
-    eggs = organized.get("eggs", [])
-    if dairy or eggs or is_big_shop:
-        rows = ""
-        # Add weekly staples
-        for item, qty, price in weekly_staples["dairy"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        # Add recipe-specific dairy
-        seen = set()
-        for item, count in dairy:
-            if item not in seen:
-                price = estimate_price(item, count)
-                total_estimate += price
-                qty = f"x{count}" if count > 1 else ""
-                rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
-                seen.add(item)
-        for item, count in eggs:
-            price = estimate_price(item, count)
-            total_estimate += price
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">x{count}</td><td class="price">~£{price:.2f}</td></tr>\n'
-        categories_html += f'''
+    # DAIRY & EGGS
+    rows = ""
+    for item, qty, price in weekly_staples["dairy"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
         <h3>🧀 DAIRY & EGGS</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate bread section
-    bread = organized.get("bread", [])
+    # BREAD
     rows = ""
     for item, qty, price in weekly_staples["bread"]:
-        price_val = float(price.replace("£", ""))
-        total_estimate += price_val
+        total += float(price.replace("£", ""))
         rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-    seen = set()
-    for item, count in bread:
-        if item not in seen:
-            price = estimate_price(item, count)
-            total_estimate += price
-            qty = f"x{count}" if count > 1 else ""
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
-            seen.add(item)
     categories_html += f'''
     <div class="category">
         <h3>🍞 BREAD & BAKERY</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate produce section
-    produce = organized.get("produce_veg", []) + organized.get("produce_fruit", [])
-    if produce:
-        rows = ""
-        for item, qty, price in weekly_staples["produce_staples"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        seen = set()
-        for item, count in produce:
-            # Skip basics already in staples
-            if any(x in item.lower() for x in ["onion", "garlic", "potato", "banana"]) and count < 3:
-                continue
-            if item not in seen:
-                price = estimate_price(item, count)
-                total_estimate += price
-                qty = f"x{count}" if count > 1 else ""
-                rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
-                seen.add(item)
-        categories_html += f'''
+    # FRESH PRODUCE
+    rows = ""
+    for item, qty, price in weekly_staples["produce"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
         <h3>🥬 FRESH PRODUCE</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate herbs section
-    herbs = organized.get("herbs", [])
-    if herbs:
-        rows = ""
-        seen = set()
-        for item, count in herbs:
-            if item not in seen:
-                price = estimate_price(item, count)
-                total_estimate += price
-                rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty"></td><td class="price">~£{price:.2f}</td></tr>\n'
-                seen.add(item)
-        categories_html += f'''
+    # PANTRY (Monthly)
+    rows = ""
+    for item, qty, price in monthly_staples["pantry"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
-        <h3>🌿 FRESH HERBS</h3>
+        <h3>🏪 PANTRY STAPLES (Monthly)</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate carbs section
-    carbs = organized.get("carbs", [])
-    if carbs:
-        rows = ""
-        seen = set()
-        for item, count in carbs:
-            if item not in seen:
-                price = estimate_price(item, count)
-                total_estimate += price
-                qty = f"x{count}" if count > 1 else ""
-                rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
-                seen.add(item)
-        categories_html += f'''
+    # FROZEN (Monthly)
+    rows = ""
+    for item, qty, price in monthly_staples["frozen"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
-        <h3>🍝 PASTA, RICE & NOODLES</h3>
+        <h3>❄️ FROZEN (Monthly)</h3>
         <table>{rows}</table>
     </div>'''
 
-    # Generate tins section
-    tins = organized.get("tins", [])
-    if tins:
-        rows = ""
-        seen = set()
-        for item, count in tins:
-            if item not in seen:
-                price = estimate_price(item, count)
-                total_estimate += price
-                qty = f"x{count}" if count > 1 else ""
-                rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">~£{price:.2f}</td></tr>\n'
-                seen.add(item)
-        categories_html += f'''
-    <div class="category">
-        <h3>🥫 TINS & JARS</h3>
-        <table>{rows}</table>
-    </div>'''
-
-    # Add staple sections
+    # DRINKS
     rows = ""
     for item, qty, price in weekly_staples["drinks"]:
-        price_val = float(price.replace("£", ""))
-        total_estimate += price_val
+        total += float(price.replace("£", ""))
         rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
     categories_html += f'''
     <div class="category">
@@ -691,10 +619,10 @@ def generate_shopping_html(week_num):
         <table>{rows}</table>
     </div>'''
 
+    # SNACKS
     rows = ""
     for item, qty, price in weekly_staples["snacks"]:
-        price_val = float(price.replace("£", ""))
-        total_estimate += price_val
+        total += float(price.replace("£", ""))
         rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
     categories_html += f'''
     <div class="category">
@@ -702,153 +630,60 @@ def generate_shopping_html(week_num):
         <table>{rows}</table>
     </div>'''
 
-    # Add monthly sections for big shop weeks
-    if is_big_shop:
-        rows = ""
-        for item, qty, price in monthly_staples["household"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        categories_html += f'''
+    # HOUSEHOLD (Monthly)
+    rows = ""
+    for item, qty, price in monthly_staples["household"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
-        <h3>🧻 HOUSEHOLD</h3>
+        <h3>🧹 HOUSEHOLD (Monthly)</h3>
         <table>{rows}</table>
     </div>'''
 
-        rows = ""
-        for item, qty, price in monthly_staples["toiletries"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        categories_html += f'''
+    # TOILETRIES (Monthly)
+    rows = ""
+    for item, qty, price in monthly_staples["toiletries"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
     <div class="category">
-        <h3>🧴 TOILETRIES</h3>
+        <h3>🧴 TOILETRIES (Monthly)</h3>
         <table>{rows}</table>
     </div>'''
 
-        rows = ""
-        for item, qty, price in monthly_staples["pantry"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        categories_html += f'''
-    <div class="category">
-        <h3>🏪 PANTRY STAPLES</h3>
-        <table>{rows}</table>
-    </div>'''
-
-        rows = ""
-        for item, qty, price in monthly_staples["frozen"]:
-            price_val = float(price.replace("£", ""))
-            total_estimate += price_val
-            rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
-        categories_html += f'''
-    <div class="category">
-        <h3>❄️ FROZEN</h3>
-        <table>{rows}</table>
-    </div>'''
-
-    # Round budget estimate
-    budget = f"~£{int(round(total_estimate, -1))}"
-
-    # QR code URL
     recipe_url = f"{BASE_URL}/week-{week_num:02d}.html"
     qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={recipe_url}"
+
+    budget = f"~£{int(round(total / 10) * 10)}"
 
     html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Week {week_num} Shopping List</title>
+    <title>Week {week_num} Shopping List - BIG SHOP</title>
     <style>
-        @page {{ size: A4; margin: 10mm; }}
+        @page {{ size: A4; margin: 8mm; }}
         * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        body {{
-            font-family: Arial, sans-serif;
-            font-size: 11px;
-            line-height: 1.3;
-            padding: 10px;
-        }}
-        .header {{
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            border-bottom: 3px solid #2c5530;
-            padding-bottom: 10px;
-            margin-bottom: 10px;
-        }}
-        .header-left h1 {{
-            font-size: 18px;
-            color: #2c5530;
-            margin-bottom: 3px;
-        }}
-        .header-left .dates {{ color: #666; font-size: 12px; }}
-        .header-left .shop-type {{
-            background: #2c5530;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 10px;
-            display: inline-block;
-            margin-top: 5px;
-        }}
-        .meals-summary {{
-            font-size: 9px;
-            color: #666;
-            margin-top: 5px;
-        }}
-        .qr-section {{
-            text-align: center;
-        }}
-        .qr-section img {{
-            width: 80px;
-            height: 80px;
-        }}
-        .qr-section p {{
-            font-size: 9px;
-            color: #666;
-            margin-top: 3px;
-        }}
-        .content {{
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }}
-        .category {{
-            break-inside: avoid;
-            margin-bottom: 8px;
-        }}
-        .category h3 {{
-            background: #e8f5e9;
-            padding: 4px 8px;
-            font-size: 11px;
-            color: #2c5530;
-            margin-bottom: 3px;
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-        }}
-        td {{
-            padding: 2px 4px;
-            border-bottom: 1px solid #eee;
-            font-size: 10px;
-        }}
-        .checkbox {{ width: 20px; text-align: center; }}
+        body {{ font-family: Arial, sans-serif; font-size: 10px; line-height: 1.2; padding: 8px; }}
+        .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #c62828; padding-bottom: 8px; margin-bottom: 8px; }}
+        .header-left h1 {{ font-size: 16px; color: #c62828; margin-bottom: 2px; }}
+        .header-left .dates {{ color: #666; font-size: 11px; }}
+        .header-left .shop-type {{ background: #c62828; color: white; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; display: inline-block; margin-top: 4px; }}
+        .header-left .note {{ font-size: 9px; color: #666; margin-top: 4px; font-style: italic; }}
+        .qr-section {{ text-align: center; }}
+        .qr-section img {{ width: 70px; height: 70px; }}
+        .qr-section p {{ font-size: 8px; color: #666; margin-top: 2px; }}
+        .content {{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }}
+        .category {{ break-inside: avoid; margin-bottom: 6px; }}
+        .category h3 {{ background: #ffebee; padding: 3px 6px; font-size: 10px; color: #c62828; margin-bottom: 2px; }}
+        table {{ width: 100%; border-collapse: collapse; }}
+        td {{ padding: 1px 3px; border-bottom: 1px solid #eee; font-size: 9px; }}
+        .checkbox {{ width: 16px; text-align: center; }}
         .qty {{ width: 50px; color: #666; text-align: right; }}
-        .price {{ width: 55px; text-align: right; color: #2c5530; font-weight: bold; }}
-        .budget {{
-            text-align: right;
-            margin-top: 10px;
-            padding-top: 5px;
-            border-top: 2px solid #2c5530;
-            font-size: 14px;
-            font-weight: bold;
-            color: #2c5530;
-        }}
-        @media print {{
-            body {{ padding: 0; }}
-        }}
+        .price {{ width: 40px; text-align: right; color: #c62828; font-weight: bold; }}
+        .budget {{ text-align: right; margin-top: 8px; padding-top: 5px; border-top: 2px solid #c62828; font-size: 14px; font-weight: bold; color: #c62828; }}
+        @media print {{ body {{ padding: 0; }} }}
     </style>
 </head>
 <body>
@@ -856,44 +691,164 @@ def generate_shopping_html(week_num):
         <div class="header-left">
             <h1>Week {week_num} - {month}</h1>
             <div class="dates">{dates}</div>
-            <div class="shop-type">{shop_type}</div>
-            <div class="meals-summary">Breakfast: {data["breakfast"]} | {"Roast: " + data["roast"] if data["roast"] else "No roast this week"}</div>
+            <div class="shop-type">BIG SHOP - Monthly Bulk Buy</div>
+            <div class="note">Meat & fish for weeks {week_num}-{min(week_num+3, 52)} - portion and freeze</div>
         </div>
         <div class="qr-section">
             <img src="{qr_url}" alt="QR Code">
             <p>Scan for recipes</p>
         </div>
     </div>
-
-    <div class="content">
-        {categories_html}
-    </div>
-
-    <div class="budget">
-        Estimated Budget: {budget}
-    </div>
+    <div class="content">{categories_html}</div>
+    <div class="budget">Estimated Budget: {budget}</div>
 </body>
 </html>'''
-
     return html
+
+
+def generate_topup_shop_html(week_num):
+    """Generate TOP-UP SHOP list - fresh produce, dairy, bread only"""
+    data = weeks_data[week_num]
+    dates = data["dates"]
+    month = data["month"]
+
+    categories_html = ""
+    total = 0
+
+    # DAIRY & EGGS
+    rows = ""
+    for item, qty, price in weekly_staples["dairy"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
+    <div class="category">
+        <h3>🧀 DAIRY & EGGS</h3>
+        <table>{rows}</table>
+    </div>'''
+
+    # BREAD
+    rows = ""
+    for item, qty, price in weekly_staples["bread"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
+    <div class="category">
+        <h3>🍞 BREAD & BAKERY</h3>
+        <table>{rows}</table>
+    </div>'''
+
+    # FRESH PRODUCE
+    rows = ""
+    for item, qty, price in weekly_staples["produce"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
+    <div class="category">
+        <h3>🥬 FRESH PRODUCE</h3>
+        <table>{rows}</table>
+    </div>'''
+
+    # DRINKS
+    rows = ""
+    for item, qty, price in weekly_staples["drinks"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
+    <div class="category">
+        <h3>🥤 DRINKS</h3>
+        <table>{rows}</table>
+    </div>'''
+
+    # SNACKS
+    rows = ""
+    for item, qty, price in weekly_staples["snacks"]:
+        total += float(price.replace("£", ""))
+        rows += f'<tr><td class="checkbox">&#9744;</td><td>{item}</td><td class="qty">{qty}</td><td class="price">{price}</td></tr>\n'
+    categories_html += f'''
+    <div class="category">
+        <h3>🍪 SNACKS</h3>
+        <table>{rows}</table>
+    </div>'''
+
+    recipe_url = f"{BASE_URL}/week-{week_num:02d}.html"
+    qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=120x120&data={recipe_url}"
+
+    budget = f"~£{int(round(total / 5) * 5)}"
+
+    html = f'''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Week {week_num} Shopping List - Top-up</title>
+    <style>
+        @page {{ size: A4; margin: 10mm; }}
+        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
+        body {{ font-family: Arial, sans-serif; font-size: 11px; line-height: 1.3; padding: 10px; }}
+        .header {{ display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #2c5530; padding-bottom: 10px; margin-bottom: 10px; }}
+        .header-left h1 {{ font-size: 18px; color: #2c5530; margin-bottom: 3px; }}
+        .header-left .dates {{ color: #666; font-size: 12px; }}
+        .header-left .shop-type {{ background: #2c5530; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; display: inline-block; margin-top: 5px; }}
+        .header-left .note {{ font-size: 9px; color: #666; margin-top: 4px; font-style: italic; }}
+        .qr-section {{ text-align: center; }}
+        .qr-section img {{ width: 80px; height: 80px; }}
+        .qr-section p {{ font-size: 9px; color: #666; margin-top: 3px; }}
+        .content {{ display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }}
+        .category {{ break-inside: avoid; margin-bottom: 10px; }}
+        .category h3 {{ background: #e8f5e9; padding: 4px 8px; font-size: 11px; color: #2c5530; margin-bottom: 3px; }}
+        table {{ width: 100%; border-collapse: collapse; }}
+        td {{ padding: 3px 4px; border-bottom: 1px solid #eee; font-size: 10px; }}
+        .checkbox {{ width: 20px; text-align: center; }}
+        .qty {{ width: 50px; color: #666; text-align: right; }}
+        .price {{ width: 45px; text-align: right; color: #2c5530; font-weight: bold; }}
+        .budget {{ text-align: right; margin-top: 10px; padding-top: 5px; border-top: 2px solid #2c5530; font-size: 14px; font-weight: bold; color: #2c5530; }}
+        @media print {{ body {{ padding: 0; }} }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1>Week {week_num} - {month}</h1>
+            <div class="dates">{dates}</div>
+            <div class="shop-type">Top-up Shop</div>
+            <div class="note">Fresh items only - meat & fish from freezer</div>
+        </div>
+        <div class="qr-section">
+            <img src="{qr_url}" alt="QR Code">
+            <p>Scan for recipes</p>
+        </div>
+    </div>
+    <div class="content">{categories_html}</div>
+    <div class="budget">Estimated Budget: {budget}</div>
+</body>
+</html>'''
+    return html
+
 
 # ============================================================
 # GENERATE ALL SHOPPING LISTS
 # ============================================================
 
-print("Generating shopping lists from recipe ingredients...")
-print("=" * 50)
+print("Generating shopping lists...")
+print("BIG SHOP = Weeks 1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 49")
+print("TOP-UP = All other weeks")
+print("=" * 60)
 
 for week_num in range(1, 53):
-    html = generate_shopping_html(week_num)
-    filename = os.path.join(output_dir, f"shopping-week-{week_num:02d}.html")
+    is_big_shop = (week_num - 1) % 4 == 0
 
+    if is_big_shop:
+        html = generate_big_shop_html(week_num)
+        shop_type = "BIG SHOP"
+    else:
+        html = generate_topup_shop_html(week_num)
+        shop_type = "Top-up"
+
+    filename = os.path.join(output_dir, f"shopping-week-{week_num:02d}.html")
     with open(filename, 'w', encoding='utf-8') as f:
         f.write(html)
 
-    is_big = "(BIG SHOP)" if (week_num - 1) % 4 == 0 else ""
-    print(f"Created shopping-week-{week_num:02d}.html {is_big}")
+    print(f"Week {week_num:02d}: {shop_type}")
 
-print("=" * 50)
-print("All 52 shopping lists created with recipe-based ingredients!")
-print(f"Files are in: {output_dir}")
+print("=" * 60)
+print("Done! Shopping lists match the monthly shopping structure.")
+print(f"Files in: {output_dir}")
