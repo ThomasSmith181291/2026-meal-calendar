@@ -173,6 +173,7 @@ meat_idx = 0
 fish_idx = 0
 veg_idx = 0
 breakfast_idx = 0
+roast_idx = 0  # Track roast rotation separately
 
 for week_num in range(1, 53):
     if week_num == 1:
@@ -184,8 +185,12 @@ for week_num in range(1, 53):
         week_end = week_start + datetime.timedelta(days=6)
         week_days = days
 
-    has_roast = (week_num % 2 == 1)
-    roast_name = roast_names[(week_num - 1) % 4] if has_roast else None
+    has_roast = (week_num % 2 == 1)  # Odd weeks have roast
+    if has_roast:
+        roast_name = roast_names[roast_idx % 4]  # Cycle: Beef, Chicken, Pork, Lamb
+        roast_idx += 1
+    else:
+        roast_name = None
 
     lunches = []
     for d in week_days:
@@ -493,17 +498,26 @@ def get_portion_size(meal):
 # SHOPPING LIST ITEMS
 # ============================================================
 
+# ============================================================
+# WEEKLY FRESH ITEMS (every week)
+# ============================================================
 weekly_fresh = {
     "dairy": [
         ("Whole milk", "4 pints"),
+        ("Plant milk (oat/almond)", "1L"),
         ("Butter", "250g"),
         ("Cheddar cheese", "400g"),
+        ("Cream cheese", "200g"),
         ("Eggs (farmshop)", "24"),
     ],
     "bread": [
         ("White sliced loaf", "1"),
-        ("Crusty bread/rolls", "1"),
+        ("Fresh bakery loaf", "1"),
+        ("Bread rolls/baps", "6"),
         ("Wraps/tortillas", "8 pack"),
+        ("Crumpets or muffins", "6 pack"),
+        ("Croissants/pastries", "4"),
+        ("Porridge oats", "1kg"),
     ],
     "produce": [
         ("Onions", "1kg"),
@@ -511,6 +525,8 @@ weekly_fresh = {
         ("Potatoes", "2.5kg"),
         ("Carrots", "1kg"),
         ("Bananas", "bunch"),
+        ("Apples", "6"),
+        ("Fresh herbs", "as needed"),
         ("Seasonal fruit", "as needed"),
         ("Seasonal veg", "as needed"),
     ],
@@ -524,22 +540,60 @@ weekly_fresh = {
     ],
 }
 
+# Fortnightly items (add to odd-numbered weeks within each month)
+fortnightly_items = {
+    "dairy": [
+        ("Greek yogurt", "500g"),
+        ("Feta cheese", "200g"),
+    ],
+    "drinks": [
+        ("Tea bags", "80 pack"),
+        ("Coffee", "200g"),
+    ],
+    "snacks": [
+        ("Crackers", "1 pack"),
+    ],
+}
+
+# ============================================================
+# MONTHLY ITEMS (BIG SHOP only)
+# ============================================================
 monthly_items = {
     "pantry": [
-        ("Tinned tomatoes", "8 tins"),
+        ("Tinned tomatoes", "4 tins"),
         ("Baked beans", "4 tins"),
         ("Kidney beans", "2 tins"),
-        ("Coconut milk", "4 tins"),
+        ("Chickpeas", "2 tins"),
+        ("Coconut milk", "2 tins"),
         ("Pasta (various)", "2kg"),
         ("Rice", "2kg"),
         ("Noodles", "4 packs"),
+        ("Plain flour", "1.5kg"),
+        ("Sugar", "1kg"),
         ("Stock cubes", "24"),
         ("Gravy granules", "2"),
+        ("Pesto", "190g jar"),
+    ],
+    "condiments": [
+        ("Ketchup", "as needed"),
+        ("Hot sauce", "as needed"),
+        ("Olive oil", "as needed"),
+        ("Vegetable oil", "as needed"),
+        ("Balsamic vinegar", "as needed"),
+        ("Honey", "as needed"),
+    ],
+    "spices": [
+        ("Mixed herbs", "as needed"),
+        ("Paprika", "as needed"),
+        ("Cumin", "as needed"),
+        ("Curry powder", "as needed"),
     ],
     "frozen": [
         ("Frozen peas", "2kg"),
         ("Oven chips", "1.5kg"),
         ("Fish fingers", "2 packs"),
+        ("Frozen pizza", "2"),
+        ("Garlic bread", "2"),
     ],
     "household": [
         ("Toilet roll", "9 pack"),
@@ -614,8 +668,20 @@ def generate_mobile_html(week_num, is_big_shop):
         items_html += portion_html
 
         # PANTRY (monthly)
-        items_html += '<div class="section"><div class="section-title">Pantry</div>'
+        items_html += '<div class="section"><div class="section-title">Pantry & Cupboard</div>'
         for item, qty in monthly_items["pantry"]:
+            items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
+        items_html += '</div>'
+
+        # CONDIMENTS (monthly - check stock)
+        items_html += '<div class="section"><div class="section-title">Condiments & Oils (check stock)</div>'
+        for item, qty in monthly_items["condiments"]:
+            items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
+        items_html += '</div>'
+
+        # SPICES (monthly - check stock)
+        items_html += '<div class="section"><div class="section-title">Spices (check stock)</div>'
+        for item, qty in monthly_items["spices"]:
             items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
         items_html += '</div>'
 
@@ -637,13 +703,20 @@ def generate_mobile_html(week_num, is_big_shop):
             items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
         items_html += '</div>'
 
+    # Determine if this is a fortnightly week (odd weeks: 1, 3, 5, 7, etc.)
+    is_fortnightly = (week_num % 2 == 1)
+
     # WEEKLY FRESH ITEMS (every week)
     items_html += '<div class="section"><div class="section-title">Dairy & Eggs</div>'
     for item, qty in weekly_fresh["dairy"]:
         items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
+    # Add fortnightly dairy items
+    if is_fortnightly:
+        for item, qty in fortnightly_items["dairy"]:
+            items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
     items_html += '</div>'
 
-    items_html += '<div class="section"><div class="section-title">Bread</div>'
+    items_html += '<div class="section"><div class="section-title">Bread & Cereals</div>'
     for item, qty in weekly_fresh["bread"]:
         items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
     items_html += '</div>'
@@ -656,11 +729,19 @@ def generate_mobile_html(week_num, is_big_shop):
     items_html += '<div class="section"><div class="section-title">Drinks</div>'
     for item, qty in weekly_fresh["drinks"]:
         items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
+    # Add fortnightly drinks
+    if is_fortnightly:
+        for item, qty in fortnightly_items["drinks"]:
+            items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
     items_html += '</div>'
 
     items_html += '<div class="section"><div class="section-title">Snacks</div>'
     for item, qty in weekly_fresh["snacks"]:
         items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
+    # Add fortnightly snacks
+    if is_fortnightly:
+        for item, qty in fortnightly_items["snacks"]:
+            items_html += f'<label class="item"><input type="checkbox"><span class="text">{item}</span><span class="qty">{qty}</span></label>'
     items_html += '</div>'
 
     recipe_url = f"{BASE_URL}/week-{week_num:02d}.html"
