@@ -193,11 +193,22 @@ for week_num in range(1, 53):
         lunch_idx += 1
 
     dinners = []
-    dinner_pattern = ["meat", "fish", "veg", "meat", "fish", "meat", "veg"]
+    # Pattern: Mon=meat, Tue=fish, Wed=veg, Thu=meat, Fri=fish, Sat=meat, Sun=special
+    dinner_pattern = ["meat", "fish", "veg", "meat", "fish", "meat", "special"]
 
     for i, d in enumerate(week_days):
-        if d == "Sun" and has_roast:
-            dinners.append((d, "Sunday Roast"))
+        if d == "Sun":
+            if has_roast:
+                # Roast for 7 on odd weeks
+                dinners.append((d, "Sunday Roast"))
+            else:
+                # Regular Sunday dinner for 3 on even weeks (alternate meat/fish)
+                if week_num % 4 == 0:
+                    dinners.append((d, fish_dinners[fish_idx % len(fish_dinners)]))
+                    fish_idx += 1
+                else:
+                    dinners.append((d, meat_dinners[meat_idx % len(meat_dinners)]))
+                    meat_idx += 1
         else:
             pattern_idx = days.index(d) if d in days else i
             category = dinner_pattern[pattern_idx % 7]
@@ -349,57 +360,89 @@ def consolidate_meat_list(proteins):
     return shopping
 
 def get_weekly_breakdown(week_nums):
-    """Get protein breakdown by week for portioning guide"""
+    """Get protein breakdown by week for portioning guide, ordered by day"""
     weekly_breakdown = {}
+    day_order = {"Mon": 1, "Tue": 2, "Wed": 3, "Thu": 4, "Fri": 5, "Sat": 6, "Sun": 7}
 
     for week_num in week_nums:
         data = weeks_data.get(week_num, {})
         if not data:
             continue
 
-        week_proteins = {"beef": [], "chicken": [], "pork": [], "lamb": [], "fish": []}
+        # Collect all meals with their day and sort order
+        meals_list = []
 
-        # Weekend breakfast
+        # Weekend breakfast (shown at start)
         breakfast = data.get("breakfast", "")
         if breakfast in breakfast_recipes:
             p = breakfast_recipes[breakfast].get("protein")
-            if p == "fish":
-                week_proteins["fish"].append(f"Breakfast: {breakfast}")
-            elif p:
-                week_proteins[p].append(f"Breakfast: {breakfast}")
+            if p:
+                portion = get_breakfast_portion(breakfast)
+                meals_list.append((0, f"Weekend Breakfast: {breakfast} ({portion})", p))
 
         # Lunches
         for day, meal in data.get("lunches", []):
             if meal in lunch_recipes:
                 p = lunch_recipes[meal].get("protein")
-                if p == "fish":
-                    week_proteins["fish"].append(f"{day} lunch: {meal}")
-                elif p:
-                    week_proteins[p].append(f"{day} lunch: {meal}")
+                if p:
+                    portion = get_lunch_portion(meal)
+                    sort_key = day_order.get(day, 8) * 10 + 1  # lunch = .1
+                    meals_list.append((sort_key, f"{day} Lunch: {meal} ({portion})", p))
 
         # Dinners
         for day, meal in data.get("dinners", []):
+            sort_key = day_order.get(day, 8) * 10 + 2  # dinner = .2
             if meal == "Sunday Roast":
                 roast = data.get("roast")
                 if roast == "Roast Beef":
-                    week_proteins["beef"].append("Sun: Roast Beef (1.5kg joint)")
+                    meals_list.append((sort_key, "Sun Dinner: Roast Beef (1.5kg joint, for 7)", "beef"))
                 elif roast == "Roast Chicken":
-                    week_proteins["chicken"].append("Sun: Roast Chicken (whole)")
+                    meals_list.append((sort_key, "Sun Dinner: Roast Chicken (whole, for 7)", "chicken"))
                 elif roast == "Roast Pork":
-                    week_proteins["pork"].append("Sun: Roast Pork (2kg shoulder)")
+                    meals_list.append((sort_key, "Sun Dinner: Roast Pork (2kg shoulder, for 7)", "pork"))
                 elif roast == "Roast Lamb":
-                    week_proteins["lamb"].append("Sun: Roast Lamb (2kg leg)")
+                    meals_list.append((sort_key, "Sun Dinner: Roast Lamb (2kg leg, for 7)", "lamb"))
             elif meal in dinner_recipes:
                 p = dinner_recipes[meal].get("protein")
-                portion = get_portion_size(meal)
-                if p == "fish":
-                    week_proteins["fish"].append(f"{day}: {meal} ({portion})")
-                elif p:
-                    week_proteins[p].append(f"{day}: {meal} ({portion})")
+                if p:
+                    portion = get_portion_size(meal)
+                    meals_list.append((sort_key, f"{day} Dinner: {meal} ({portion})", p))
 
-        weekly_breakdown[week_num] = week_proteins
+        # Sort by day order
+        meals_list.sort(key=lambda x: x[0])
+
+        # Build ordered list
+        ordered_items = [item[1] for item in meals_list]
+        weekly_breakdown[week_num] = ordered_items
 
     return weekly_breakdown
+
+def get_breakfast_portion(meal):
+    """Get portion info for breakfast items"""
+    if "Full English" in meal:
+        return "sausages + bacon"
+    elif "Benedict" in meal or "Muffin" in meal:
+        return "bacon/ham"
+    elif "Royale" in meal or "Salmon" in meal:
+        return "smoked salmon"
+    elif "Kedgeree" in meal:
+        return "smoked haddock"
+    elif "Croissant" in meal:
+        return "ham"
+    else:
+        return "1 portion"
+
+def get_lunch_portion(meal):
+    """Get portion info for lunch items"""
+    meal_lower = meal.lower()
+    if any(x in meal_lower for x in ["chicken noodle", "club", "coronation", "caesar"]):
+        return "chicken"
+    elif any(x in meal_lower for x in ["ham", "blt", "croque", "ploughman", "chowder"]):
+        return "ham/bacon"
+    elif any(x in meal_lower for x in ["tuna", "prawn", "salmon", "sardine", "nicoise"]):
+        return "fish"
+    else:
+        return "1 portion"
 
 def get_portion_size(meal):
     """Get standard portion size for a meal"""
@@ -558,15 +601,12 @@ def generate_mobile_html(week_num, is_big_shop):
         portion_labels = ["This Week", "Week 2", "Week 3", "Week 4"]
         portion_html = '<div class="section portioning"><div class="section-title">Freezer Portioning Guide</div>'
         for idx, wk in enumerate(month_weeks):
-            wk_breakdown = weekly_breakdown.get(wk, {})
-            all_proteins = []
-            for ptype in ["beef", "chicken", "pork", "lamb", "fish"]:
-                all_proteins.extend(wk_breakdown.get(ptype, []))
+            meals = weekly_breakdown.get(wk, [])
 
-            if all_proteins:
+            if meals:
                 label = portion_labels[idx] if idx < len(portion_labels) else f"Week {idx+1}"
                 portion_html += f'<div class="portion-week"><div class="portion-week-title">{label}</div>'
-                for item in all_proteins:
+                for item in meals:
                     portion_html += f'<div class="portion-item">{item}</div>'
                 portion_html += '</div>'
 
