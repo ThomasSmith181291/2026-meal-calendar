@@ -300,7 +300,7 @@ def consolidate_meat_list(proteins):
     if beef_mince > 0: shopping["beef"].append(f"Beef mince ({beef_mince * 500}g)")
     if beef_steak > 0: shopping["beef"].append(f"Beef steak ({beef_steak * 500}g)")
     if beef_stew > 0: shopping["beef"].append(f"Stewing beef ({beef_stew * 500}g)")
-    if beef_roast > 0: shopping["beef"].append("Beef roasting joint (1.5kg)")
+    if beef_roast > 0: shopping["beef"].append("Beef roasting joint (2.5kg for 7)")
 
     # Chicken
     chicken_breast = sum(1 for m in proteins["chicken"] if any(x in m for x in ["Tikka", "Fajita", "Korma", "Katsu", "Stir-fry", "Pie", "Honey", "Lemon", "Goujons", "Caesar", "Coronation", "Club"]))
@@ -309,7 +309,7 @@ def consolidate_meat_list(proteins):
 
     if chicken_breast > 0: shopping["chicken"].append(f"Chicken breasts ({chicken_breast * 2})")
     if chicken_thigh > 0: shopping["chicken"].append(f"Chicken thighs ({chicken_thigh * 500}g)")
-    if chicken_whole > 0: shopping["chicken"].append("Whole chicken (1.8kg)")
+    if chicken_whole > 0: shopping["chicken"].append("Whole chicken (2.5kg for 7)")
 
     # Pork
     sausage = sum(1 for m in proteins["pork"] if any(x in m for x in ["Sausage", "Toad", "Full English"]))
@@ -328,7 +328,7 @@ def consolidate_meat_list(proteins):
     if pork_mince > 0: shopping["pork"].append(f"Pork mince ({pork_mince * 500}g)")
     if pork_tender > 0: shopping["pork"].append(f"Pork tenderloin ({pork_tender * 400}g)")
     if gammon > 0: shopping["pork"].append(f"Gammon steaks ({gammon * 2})")
-    if pork_shoulder > 0: shopping["pork"].append("Pork shoulder (2kg)")
+    if pork_shoulder > 0: shopping["pork"].append("Pork shoulder (2.5kg for 7)")
 
     # Lamb
     lamb_mince = sum(1 for m in proteins["lamb"] if any(x in m for x in ["Shepherd", "Kofta", "Moussaka"]))
@@ -338,7 +338,7 @@ def consolidate_meat_list(proteins):
 
     if lamb_mince > 0: shopping["lamb"].append(f"Lamb mince ({lamb_mince * 500}g)")
     if lamb_chop > 0: shopping["lamb"].append(f"Lamb chops ({lamb_chop * 8})")
-    if lamb_leg > 0: shopping["lamb"].append("Leg of lamb (2kg)")
+    if lamb_leg > 0: shopping["lamb"].append("Leg of lamb (2.5kg for 7)")
     if lamb_neck > 0: shopping["lamb"].append(f"Lamb neck ({lamb_neck * 500}g)")
 
     # Fish
@@ -400,13 +400,13 @@ def get_weekly_breakdown(week_nums):
             if meal == "Sunday Roast":
                 roast = data.get("roast")
                 if roast == "Roast Beef":
-                    meals_list.append((sort_key, "Sun Dinner: Roast Beef (1.5kg joint, for 7)", "beef"))
+                    meals_list.append((sort_key, "Sun Dinner: Roast Beef (2.5kg joint, for 7)", "beef"))
                 elif roast == "Roast Chicken":
-                    meals_list.append((sort_key, "Sun Dinner: Roast Chicken (whole, for 7)", "chicken"))
+                    meals_list.append((sort_key, "Sun Dinner: Roast Chicken (2.5kg, for 7)", "chicken"))
                 elif roast == "Roast Pork":
-                    meals_list.append((sort_key, "Sun Dinner: Roast Pork (2kg shoulder, for 7)", "pork"))
+                    meals_list.append((sort_key, "Sun Dinner: Roast Pork (2.5kg shoulder, for 7)", "pork"))
                 elif roast == "Roast Lamb":
-                    meals_list.append((sort_key, "Sun Dinner: Roast Lamb (2kg leg, for 7)", "lamb"))
+                    meals_list.append((sort_key, "Sun Dinner: Roast Lamb (2.5kg leg, for 7)", "lamb"))
             elif meal in dinner_recipes:
                 p = dinner_recipes[meal].get("protein")
                 if p:
