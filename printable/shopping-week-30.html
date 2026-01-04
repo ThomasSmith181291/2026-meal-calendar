@@ -2,83 +2,246 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Week 30 Shopping List - Top-up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>July Week 3 Shopping List</title>
     <style>
-        @page { size: A4; margin: 10mm; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; font-size: 11px; line-height: 1.3; padding: 10px; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #2c5530; padding-bottom: 10px; margin-bottom: 10px; }
-        .header-left h1 { font-size: 18px; color: #2c5530; margin-bottom: 3px; }
-        .header-left .dates { color: #666; font-size: 12px; }
-        .header-left .shop-type { background: #2c5530; color: white; padding: 3px 8px; border-radius: 3px; font-size: 10px; display: inline-block; margin-top: 5px; }
-        .header-left .note { font-size: 9px; color: #666; margin-top: 4px; font-style: italic; }
-        .qr-section { text-align: center; }
-        .qr-section img { width: 80px; height: 80px; }
-        .qr-section p { font-size: 9px; color: #666; margin-top: 3px; }
-        .content { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .category { break-inside: avoid; margin-bottom: 10px; }
-        .category h3 { background: #e8f5e9; padding: 4px 8px; font-size: 11px; color: #2c5530; margin-bottom: 3px; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 3px 4px; border-bottom: 1px solid #eee; font-size: 10px; }
-        .checkbox { width: 20px; text-align: center; }
-        .qty { width: 50px; color: #666; text-align: right; }
-        .price { width: 45px; text-align: right; color: #2c5530; font-weight: bold; }
-        .budget { text-align: right; margin-top: 10px; padding-top: 5px; border-top: 2px solid #2c5530; font-size: 14px; font-weight: bold; color: #2c5530; }
-        @media print { body { padding: 0; } }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .header {
+            background: #2c5530;
+            color: white;
+            padding: 20px 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .header .subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .header .dates {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+        .recipe-link {
+            display: block;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 12px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .content {
+            padding: 12px;
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-title {
+            background: #f8f8f8;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+        }
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 14px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .item:last-child {
+            border-bottom: none;
+        }
+        .item:active {
+            background: #f5f5f5;
+        }
+        .item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 14px;
+            accent-color: #2c5530;
+            cursor: pointer;
+        }
+        .item .text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+        }
+        .item .qty {
+            font-size: 14px;
+            color: #888;
+            margin-left: 8px;
+        }
+        .item.checked .text {
+            text-decoration: line-through;
+            color: #aaa;
+        }
+        .progress {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #2c5530;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            min-width: 50px;
+        }
+        .clear-btn {
+            background: none;
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+        }
+        .portioning {
+            background: #fff8e1;
+        }
+        .portioning .section-title {
+            background: #ffc107;
+            color: #333;
+        }
+        .portion-week {
+            padding: 12px 16px;
+            border-bottom: 1px solid #ffe082;
+        }
+        .portion-week:last-child {
+            border-bottom: none;
+        }
+        .portion-week-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #e65100;
+            margin-bottom: 8px;
+        }
+        .portion-item {
+            font-size: 13px;
+            color: #555;
+            padding: 4px 0;
+            padding-left: 12px;
+            border-left: 3px solid #ffc107;
+            margin-bottom: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="header-left">
-            <h1>Week 30 - July</h1>
-            <div class="dates">20 Jul - 26 Jul 2026</div>
-            <div class="shop-type">Top-up Shop</div>
-            <div class="note">Fresh items only - meat & fish from freezer</div>
-        </div>
-        <div class="qr-section">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://thomassmith181291.github.io/2026-meal-calendar/week-30.html" alt="QR Code">
-            <p>Scan for recipes</p>
-        </div>
+        <h1>July Week 3</h1>
+        <div class="subtitle">Weekly Top-up</div>
+        <div class="dates">20 Jul - 26 Jul 2026</div>
+        <a href="https://thomassmith181291.github.io/2026-meal-calendar/week-30.html" class="recipe-link">View This Week's Recipes</a>
     </div>
+
     <div class="content">
-    <div class="category">
-        <h3>🧀 DAIRY & EGGS</h3>
-        <table><tr><td class="checkbox">&#9744;</td><td>Whole milk</td><td class="qty">4 pints</td><td class="price">£1.50</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Butter</td><td class="qty">250g</td><td class="price">£2.00</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Cheddar cheese</td><td class="qty">400g</td><td class="price">£3.50</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Eggs (farmshop)</td><td class="qty">24</td><td class="price">£6.00</td></tr>
-</table>
+        <div class="section"><div class="section-title">Dairy & Eggs</div><label class="item"><input type="checkbox"><span class="text">Whole milk</span><span class="qty">4 pints</span></label><label class="item"><input type="checkbox"><span class="text">Butter</span><span class="qty">250g</span></label><label class="item"><input type="checkbox"><span class="text">Cheddar cheese</span><span class="qty">400g</span></label><label class="item"><input type="checkbox"><span class="text">Eggs (farmshop)</span><span class="qty">24</span></label></div><div class="section"><div class="section-title">Bread</div><label class="item"><input type="checkbox"><span class="text">White sliced loaf</span><span class="qty">1</span></label><label class="item"><input type="checkbox"><span class="text">Crusty bread/rolls</span><span class="qty">1</span></label><label class="item"><input type="checkbox"><span class="text">Wraps/tortillas</span><span class="qty">8 pack</span></label></div><div class="section"><div class="section-title">Fresh Produce</div><label class="item"><input type="checkbox"><span class="text">Onions</span><span class="qty">1kg</span></label><label class="item"><input type="checkbox"><span class="text">Garlic</span><span class="qty">2 bulbs</span></label><label class="item"><input type="checkbox"><span class="text">Potatoes</span><span class="qty">2.5kg</span></label><label class="item"><input type="checkbox"><span class="text">Carrots</span><span class="qty">1kg</span></label><label class="item"><input type="checkbox"><span class="text">Bananas</span><span class="qty">bunch</span></label><label class="item"><input type="checkbox"><span class="text">Seasonal fruit</span><span class="qty">as needed</span></label><label class="item"><input type="checkbox"><span class="text">Seasonal veg</span><span class="qty">as needed</span></label></div><div class="section"><div class="section-title">Drinks</div><label class="item"><input type="checkbox"><span class="text">Fizzy drinks</span><span class="qty">2x 2L</span></label><label class="item"><input type="checkbox"><span class="text">Squash</span><span class="qty">1L</span></label></div><div class="section"><div class="section-title">Snacks</div><label class="item"><input type="checkbox"><span class="text">Crisps</span><span class="qty">multipack</span></label><label class="item"><input type="checkbox"><span class="text">Biscuits</span><span class="qty">1 pack</span></label></div>
     </div>
-    <div class="category">
-        <h3>🍞 BREAD & BAKERY</h3>
-        <table><tr><td class="checkbox">&#9744;</td><td>White sliced loaf</td><td class="qty">1</td><td class="price">£1.20</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Crusty bread/rolls</td><td class="qty">1</td><td class="price">£1.50</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Wraps/tortillas</td><td class="qty">8 pack</td><td class="price">£1.50</td></tr>
-</table>
+
+    <div class="progress">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-text" id="progressText">0/0</div>
+        <button class="clear-btn" onclick="clearAll()">Clear</button>
     </div>
-    <div class="category">
-        <h3>🥬 FRESH PRODUCE</h3>
-        <table><tr><td class="checkbox">&#9744;</td><td>Onions</td><td class="qty">1kg</td><td class="price">£1.00</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Garlic</td><td class="qty">2 bulbs</td><td class="price">£0.80</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Potatoes</td><td class="qty">2.5kg</td><td class="price">£2.50</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Carrots</td><td class="qty">1kg</td><td class="price">£0.80</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Bananas</td><td class="qty">bunch</td><td class="price">£0.90</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Seasonal fruit</td><td class="qty">varies</td><td class="price">£3.00</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Seasonal veg</td><td class="qty">varies</td><td class="price">£5.00</td></tr>
-</table>
-    </div>
-    <div class="category">
-        <h3>🥤 DRINKS</h3>
-        <table><tr><td class="checkbox">&#9744;</td><td>Fizzy drinks</td><td class="qty">2x 2L</td><td class="price">£2.00</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Squash</td><td class="qty">1L</td><td class="price">£1.50</td></tr>
-</table>
-    </div>
-    <div class="category">
-        <h3>🍪 SNACKS</h3>
-        <table><tr><td class="checkbox">&#9744;</td><td>Crisps</td><td class="qty">6 pack</td><td class="price">£2.00</td></tr>
-<tr><td class="checkbox">&#9744;</td><td>Biscuits</td><td class="qty">1 pack</td><td class="price">£1.20</td></tr>
-</table>
-    </div></div>
-    <div class="budget">Estimated Budget: ~£40</div>
+
+    <script>
+        const STORAGE_KEY = 'shopping-week-30';
+
+        function saveState() {
+            const items = document.querySelectorAll('.item input');
+            const state = Array.from(items).map(cb => cb.checked);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            updateProgress();
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const state = JSON.parse(saved);
+                const items = document.querySelectorAll('.item input');
+                items.forEach((cb, i) => {
+                    if (state[i]) {
+                        cb.checked = true;
+                        cb.closest('.item').classList.add('checked');
+                    }
+                });
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const items = document.querySelectorAll('.item input');
+            const checked = document.querySelectorAll('.item input:checked').length;
+            const total = items.length;
+            const pct = total > 0 ? (checked / total * 100) : 0;
+
+            document.getElementById('progressFill').style.width = pct + '%';
+            document.getElementById('progressText').textContent = checked + '/' + total;
+        }
+
+        function clearAll() {
+            if (confirm('Clear all ticked items?')) {
+                document.querySelectorAll('.item input').forEach(cb => {
+                    cb.checked = false;
+                    cb.closest('.item').classList.remove('checked');
+                });
+                saveState();
+            }
+        }
+
+        document.querySelectorAll('.item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    const cb = this.querySelector('input');
+                    cb.checked = !cb.checked;
+                }
+                this.classList.toggle('checked', this.querySelector('input').checked);
+                saveState();
+            });
+        });
+
+        loadState();
+    </script>
 </body>
 </html>
