@@ -1,0 +1,118 @@
+{
+    "family": {
+        "regular_size": 3,
+        "extended_size": 7,
+        "members": [
+            {"name": "Adult 1", "type": "adult"},
+            {"name": "Adult 2", "type": "adult"},
+            {"name": "Toddler", "type": "child", "age": 3}
+        ]
+    },
+    "meal_schedule": {
+        "monday": {
+            "breakfast": {"type": "planned", "serves": 3},
+            "lunch": {"type": "packed", "serves": 2, "note": "Adults only"},
+            "tea": {"type": "hot", "serves": 3}
+        },
+        "tuesday": {
+            "breakfast": {"type": "staple", "serves": 3},
+            "lunch": {"type": "packed", "serves": 2, "note": "Adults only"},
+            "tea": {"type": "hot", "serves": 3}
+        },
+        "wednesday": {
+            "breakfast": {"type": "staple", "serves": 3},
+            "lunch": {"type": "packed", "serves": 2, "note": "Adults only"},
+            "tea": {"type": "hot", "serves": 3}
+        },
+        "thursday": {
+            "breakfast": {"type": "staple", "serves": 3},
+            "lunch": {"type": "packed", "serves": 2, "note": "Adults only"},
+            "tea": {"type": "hot", "serves": 3}
+        },
+        "friday": {
+            "breakfast": {"type": "planned", "serves": 3},
+            "lunch": {"type": "packed", "serves": 2, "note": "Adults only"},
+            "tea": {"type": "hot", "serves": 3}
+        },
+        "saturday": {
+            "breakfast": {"type": "special", "serves": 3},
+            "lunch": {"type": "midday_dinner", "serves": 3},
+            "tea": {"type": "evening_tea", "serves": 3, "note": "Light meal"}
+        },
+        "sunday": {
+            "breakfast": {"type": "special", "serves": 3},
+            "lunch": null,
+            "tea": {"type": "roast", "serves": 3, "extended_weeks": [2, 4]}
+        }
+    },
+    "lunch_requirements": {
+        "must_be_portable": true,
+        "must_be_reheatable_or_cold": true,
+        "cold_dishes_ok": true
+    },
+    "shops": {
+        "haigh_farm_shop": {
+            "name": "Haigh Farm Shop",
+            "categories": {
+                "meat": ["beef", "chicken", "lamb", "pork", "bacon", "sausages", "mince"],
+                "special_items": ["chicken kievs"],
+                "dairy": ["eggs", "milk", "butter", "cheese"],
+                "vegetables": ["all vegetables", "potatoes", "carrots", "onions", "broccoli", "peppers", "tomatoes", "mushrooms", "courgettes", "leeks", "cabbage", "cauliflower", "parsnips", "swede", "butternut squash", "sweet potatoes", "kale", "spinach", "garlic"],
+                "drinks": ["fizzy drinks", "juice"]
+            },
+            "frequency": {
+                "meat": "monthly",
+                "fresh": "weekly"
+            }
+        },
+        "lidl": {
+            "name": "Lidl",
+            "categories": {
+                "dairy": ["yogurt", "cream", "creme fraiche"],
+                "fruit": ["bananas", "apples", "oranges", "berries", "grapes", "pears", "lemons", "limes"],
+                "bakery": ["bread", "croissants", "pastries", "brioche", "rolls", "bagels"],
+                "cupboard_staples": ["pasta", "rice", "noodles", "tinned tomatoes", "tinned beans", "coconut milk", "stock cubes", "flour", "sugar"],
+                "cooking": ["oils", "sauces", "condiments", "spices", "herbs", "vinegar", "soy sauce", "honey"],
+                "frozen": ["frozen peas", "frozen chips", "ice cream"],
+                "other": ["cereals", "porridge oats", "snacks", "crisps", "nuts", "dried fruit"]
+            },
+            "frequency": "weekly"
+        },
+        "dewsbury_fishmonger": {
+            "name": "Dewsbury Fishmonger",
+            "categories": {
+                "fish": ["cod", "haddock", "salmon", "sea bass", "prawns", "smoked haddock"]
+            },
+            "frequency": "monthly"
+        }
+    },
+    "shopping_schedule": {
+        "month_start": {
+            "day": "sunday_before_month",
+            "shops": ["haigh_farm_shop", "dewsbury_fishmonger", "lidl"],
+            "items": ["all_meat", "all_fish", "week1_fresh", "monthly_staples"]
+        },
+        "weekly": {
+            "day": "saturday_or_sunday",
+            "shops": ["lidl", "haigh_farm_shop"],
+            "items": ["fresh_only"]
+        }
+    },
+    "budget": {
+        "monthly_total": 450,
+        "currency": "GBP",
+        "pricing_method": "uk_average_estimates"
+    },
+    "constraints": {
+        "fish_dishes_per_month": {"min": 3, "max": 4},
+        "minimize_recipe_repeats": true,
+        "track_usage_history": true,
+        "seasonality": "ingredient_based"
+    },
+    "extended_family_sundays": [2, 4],
+    "output": {
+        "page_size": "A4",
+        "orientation": "landscape",
+        "github_pages_repo": "https://thomassmith181291.github.io/2026-meal-calendar"
+    }
+}

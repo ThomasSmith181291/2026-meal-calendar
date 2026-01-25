@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Output files (regenerated)
+output/
+
+# Data (local only)
+data/recipes/pdfs/
+data/recipes/photos/
+data/recipes/photos_resized/
+
+# OS
+.DS_Store
+Thumbs.db
